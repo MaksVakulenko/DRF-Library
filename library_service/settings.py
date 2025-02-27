@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     # third-party apps:
     "rest_framework",
     "debug_toolbar",
-'   "drf_spectacular',
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
