@@ -9,8 +9,14 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-rss$h-n(6zgb=!qncu8abk*^y^vb+5zk05rev)(bp7$3^4ls4n"
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-rss$h-n(6zgb=!qncu8abk*^y^vb+5zk05rev)(bp7$3^4ls4n")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,12 +43,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework"
+
+    # custom apps:
     "book",
     "borrowing",
-    "debug_toolbar",
     "user",
-    "payment"
+    "payment",
+
+    # third-party apps:
+    "rest_framework",
+    "debug_toolbar",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -112,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Kiev"
 
 USE_I18N = True
 
@@ -132,3 +143,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Library API",
+    "DESCRIPTION": "A REST API for managing library books, borrowings, and payments.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+
+# Stripe
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
