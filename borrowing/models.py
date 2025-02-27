@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.core.exceptions import ValidationError
 
@@ -19,8 +21,26 @@ class Borrowing(models.Model):
                 }
             )
 
+    @staticmethod
+    def validate_expected_return_date(expected_date: datetime.date, borrow_date: datetime.date):
+        today = datetime.date.today()
+        if expected_date < today:
+            raise ValidationError(
+                {
+                    "expected_return_date": "Expected return date can't be in the past!"
+                }
+            )
+
+        if expected_date <= borrow_date:
+            raise ValidationError(
+                {
+                    "expected_return_date": "Expected return date must be later than the borrow date!"
+                }
+            )
+
     def clean(self):
         Borrowing.validate_book_inventory(self.book)
+        Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
 
     def save(
         self,
