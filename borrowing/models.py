@@ -9,8 +9,8 @@ class Borrowing(models.Model):
     borrow_date = models.DateField(auto_now_add=True)
     expected_return_date = models.DateField()
     actual_return_date = models.DateField(null=True, blank=True)
-    book = models.ForeignKey("Book", on_delete=models.CASCADE, related_name="borrowings")
-    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="borrowings")
+    book = models.ForeignKey("Book", on_delete=models.CASCADE, related_name="borrowings") # TODO import book
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="borrowings") # TODO import user
 
     @staticmethod
     def validate_book_inventory(book: "Book") -> None:
@@ -43,11 +43,11 @@ class Borrowing(models.Model):
         Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
 
     def save(
-        self,
-        force_insert = ...,
-        force_update = ...,
-        using = ...,
-        update_fields = ...,
+            self,
+            force_insert=...,
+            force_update=...,
+            using=...,
+            update_fields=...,
     ):
         self.full_clean()
         self.save(force_insert, force_update, using, update_fields)
