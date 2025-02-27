@@ -1,7 +1,10 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
+
+from book.models import Book
 
 
 class Borrowing(models.Model):
@@ -9,8 +12,8 @@ class Borrowing(models.Model):
     borrow_date = models.DateField(auto_now_add=True)
     expected_return_date = models.DateField()
     actual_return_date = models.DateField(null=True, blank=True)
-    book = models.ForeignKey("Book", on_delete=models.CASCADE, related_name="borrowings") # TODO import book
-    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="borrowings") # TODO import user
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="borrowings")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrowings")
 
     @staticmethod
     def validate_book_inventory(book: "Book") -> None:
