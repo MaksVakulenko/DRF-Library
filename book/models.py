@@ -1,3 +1,30 @@
 from django.db import models
 
-# Create your models here.
+
+class Author(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class Book(models.Model):
+    class CoverType(models.TextChoices):
+        HARD = "HARD", "Hardcover"
+        SOFT = "SOFT", "Softcover"
+        choices = [
+            (HARD, "Hardcover"),
+            (SOFT, "Softcover"),
+        ]
+
+    title = models.CharField(max_length=255)
+    author = models.ManyToManyField(Author, related_name="books")
+    cover = models.CharField(max_length=4, choices=CoverType.choices)
+    inventory = models.PositiveIntegerField()
+    daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return (f"{self.title} by "
+                f"{', '.join(str(author) for author in self.author.all())}"
+                f" ({self.cover})")
