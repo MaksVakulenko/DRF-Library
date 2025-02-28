@@ -37,10 +37,14 @@ class BorrowingViewSet(
     @action(
         methods=["POST"],
         detail=True,
-        url_path="return-book",
+        url_path="return",
     )
     def return_book(self, request, pk=None):
         borrowing = self.get_object()
+
+        if borrowing.actual_return_date is not None:
+            return Response({"This book has already been returned"}, status=status.HTTP_400_BAD_REQUEST)
+
         today = datetime.date.today()
 
         serializer = BorrowingReturnSerializer(borrowing, data={"actual_return_date": today}, partial=True)
