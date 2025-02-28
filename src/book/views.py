@@ -3,6 +3,7 @@ from rest_framework import (
     viewsets,
     filters
 )
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from book.models import (
     Book,
@@ -22,6 +23,11 @@ class BaseViewSet(viewsets.ModelViewSet):
         filters.SearchFilter,
         filters.OrderingFilter
     ]
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAuthenticated(), IsAdminUser()]
+        return [IsAuthenticated(),]
 
 
 class BookViewSet(BaseViewSet):
@@ -48,8 +54,9 @@ class BookViewSet(BaseViewSet):
         )
 
         queryset = queryset.annotate(
-            primary_author_first_name=F("authors_list__first_name"),
-            primary_author_last_name=F("authors_list__last_name")
+            # fixed F queries
+            primary_author_first_name=F("authors__first_name"),
+            primary_author_last_name=F("authors__last_name")
         )
 
         return queryset
