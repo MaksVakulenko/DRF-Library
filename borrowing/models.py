@@ -20,7 +20,7 @@ class Borrowing(models.Model):
         if Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True).exists():
             raise ValidationError(
                 {
-                    "user": "You already have an active borrowing"
+                    "user": "You already have an active borrowing!"
                 }
             )
 
