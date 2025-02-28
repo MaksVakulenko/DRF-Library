@@ -15,7 +15,7 @@ class Book(models.Model):
         SOFT = "SOFT", "Softcover"
 
     title = models.CharField(max_length=255)
-    author = models.ManyToManyField(Author, related_name="books")
+    authors = models.ManyToManyField(Author, related_name="books")
     cover = models.CharField(max_length=4, choices=CoverType.choices)
     inventory = models.PositiveIntegerField()
     daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
