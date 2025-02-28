@@ -1,7 +1,10 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
+
+from book.models import Book
 
 
 class Borrowing(models.Model):
@@ -9,11 +12,20 @@ class Borrowing(models.Model):
     borrow_date = models.DateField(auto_now_add=True)
     expected_return_date = models.DateField()
     actual_return_date = models.DateField(null=True, blank=True)
-    book = models.ForeignKey("Book", on_delete=models.CASCADE, related_name="borrowings")
-    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="borrowings")
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="borrowings")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrowings")
 
     @staticmethod
-    def validate_book_inventory(book: "Book") -> None:
+    def validate_if_user_has_borrowing(user_id: int):
+        if Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True).exists():
+            raise ValidationError(
+                {
+                    "user": "You already have an active borrowing!"
+                }
+            )
+
+    @staticmethod
+    def validate_book_inventory(book: Book) -> None:
         if book.inventory <= 0:
             raise ValidationError(
                 {
@@ -41,13 +53,8 @@ class Borrowing(models.Model):
     def clean(self):
         Borrowing.validate_book_inventory(self.book)
         Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
+        Borrowing.validate_if_user_has_borrowing(self.user_id)
 
-    def save(
-        self,
-        force_insert = ...,
-        force_update = ...,
-        using = ...,
-        update_fields = ...,
-    ):
+    def save(self, *args, **kwargs):
         self.full_clean()
-        self.save(force_insert, force_update, using, update_fields)
+        super().save(*args, **kwargs)
