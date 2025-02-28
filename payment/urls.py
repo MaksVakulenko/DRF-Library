@@ -1,5 +1,8 @@
 from django.urls import path
 
+from payment.views import StripeSuccessAPI, StripeCancelAPI
+
+
 app_name = "payment"
 
 urlpatterns = [
