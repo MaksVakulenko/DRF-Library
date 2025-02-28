@@ -1,10 +1,8 @@
 from django.db.models import Prefetch, F
 from rest_framework import (
     viewsets,
-    filters,
-    permissions
+    filters
 )
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from book.models import (
     Book,
@@ -20,8 +18,6 @@ from book.serializers import (
 
 
 class BaseViewSet(viewsets.ModelViewSet):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [
         filters.SearchFilter,
         filters.OrderingFilter
