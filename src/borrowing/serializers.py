@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from borrowing.models import Borrowing
+from book.serializers import BookSerializer
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -40,3 +41,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
 
     def get_is_active(self, obj):
         return obj.actual_return_date is None
+
+
+class BorrowingDetailSerializer(BorrowingListSerializer):
+    book = BookSerializer()
