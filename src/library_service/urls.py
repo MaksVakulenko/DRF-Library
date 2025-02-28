@@ -3,8 +3,15 @@ from django.urls import include, path
 from debug_toolbar.toolbar import debug_toolbar_urls
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
+from library_service.views import health_check
+
+
 urlpatterns = [
+    # Django Admin Panel
     path("admin/", admin.site.urls),
+
+    # Healthcheck endpoint
+    path("api/health/", health_check, name="health_check"),
 
     # Spectacular:
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
