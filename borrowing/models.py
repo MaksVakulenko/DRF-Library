@@ -16,6 +16,15 @@ class Borrowing(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrowings")
 
     @staticmethod
+    def validate_if_user_has_borrowing(user_id: int):
+        if Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True).exists():
+            raise ValidationError(
+                {
+                    "user": "You already have an active borrowing"
+                }
+            )
+
+    @staticmethod
     def validate_book_inventory(book: "Book") -> None:
         if book.inventory <= 0:
             raise ValidationError(
