@@ -25,7 +25,7 @@ class Borrowing(models.Model):
             )
 
     @staticmethod
-    def validate_book_inventory(book: "Book") -> None:
+    def validate_book_inventory(book: Book) -> None:
         if book.inventory <= 0:
             raise ValidationError(
                 {
@@ -54,12 +54,6 @@ class Borrowing(models.Model):
         Borrowing.validate_book_inventory(self.book)
         Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
 
-    def save(
-            self,
-            force_insert=...,
-            force_update=...,
-            using=...,
-            update_fields=...,
-    ):
+    def save(self, *args, **kwargs):
         self.full_clean()
-        self.save(force_insert, force_update, using, update_fields)
+        super().save(*args, **kwargs)
