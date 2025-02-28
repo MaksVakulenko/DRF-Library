@@ -13,18 +13,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    authors = AuthorSerializer(many=True)
 
     class Meta:
         model = Book
-        fields = [
-            "id",
-            "title",
-            "authors",
-            "cover",
-            "inventory",
-            "daily_fee"
-        ]
+        fields = "__all__"
 
 
 class BookListSerializer(serializers.ModelSerializer):
@@ -32,14 +24,7 @@ class BookListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = [
-            "id",
-            "title",
-            "authors",
-            "cover",
-            "inventory",
-            "daily_fee"
-        ]
+        exclude = ("cover",)
 
 
 class BookRetrieveSerializer(serializers.ModelSerializer):
