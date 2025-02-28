@@ -13,8 +13,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    authors = AuthorSerializer(many=True, read_only=True)
-    available_inventory = serializers.SerializerMethodField()
+    authors = AuthorSerializer(many=True)
 
     class Meta:
         model = Book
@@ -24,6 +23,35 @@ class BookSerializer(serializers.ModelSerializer):
             "authors",
             "cover",
             "inventory",
-            "daily_fee",
-            "available_inventory"
+            "daily_fee"
+        ]
+
+
+class BookListSerializer(serializers.ModelSerializer):
+    authors = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Book
+        fields = [
+            "id",
+            "title",
+            "authors",
+            "cover",
+            "inventory",
+            "daily_fee"
+        ]
+
+
+class BookRetrieveSerializer(serializers.ModelSerializer):
+    authors = AuthorSerializer(many=True)
+
+    class Meta:
+        model = Book
+        fields = [
+            "id",
+            "title",
+            "authors",
+            "cover",
+            "inventory",
+            "daily_fee"
         ]
