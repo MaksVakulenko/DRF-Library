@@ -1,3 +1,4 @@
+from django.db.models import Prefetch, F
 from rest_framework import (
     viewsets,
     filters,
@@ -12,7 +13,9 @@ from book.models import (
 
 from book.serializers import (
     BookSerializer,
-    AuthorSerializer
+    AuthorSerializer,
+    BookListSerializer,
+    BookRetrieveSerializer
 )
 
 
@@ -26,21 +29,43 @@ class BaseViewSet(viewsets.ModelViewSet):
 
 
 class BookViewSet(BaseViewSet):
-    queryset = Book.objects.prefetch_related("actors")
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
     search_fields = [
         "title",
-        "authors",
-        "cover",
-        "daily_fee"
+        "authors__first_name",
+        "authors__last_name"
     ]
     ordering_fields = [
         "id",
-        "authors",
-        "title"
+        "title",
+        "primary_author_first_name",
+        "primary_author_last_name"
     ]
+    ordering = ["id"]
+
+    def get_queryset(self):
+        authors = Author.objects.all()
+
+        queryset = Book.objects.prefetch_related(
+            Prefetch("authors", queryset=authors, to_attr="authors_list")
+        )
+
+        queryset = queryset.annotate(
+            primary_author_first_name=F("authors_list__first_name"),
+            primary_author_last_name=F("authors_list__last_name")
+        )
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return BookListSerializer
+        if self.action == "retrieve":
+            return BookRetrieveSerializer
+        return BookSerializer
 
 
 class AuthorViewSet(BaseViewSet):
-    queryset = Author.objects.prefetch_related("books")
+    queryset = Author.objects.all()
     serializer_class = AuthorSerializer
