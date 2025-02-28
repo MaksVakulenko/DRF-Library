@@ -27,7 +27,7 @@ class BaseViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
             return [IsAuthenticated(), IsAdminUser()]
-        return super(BaseViewSet, self).get_permissions()
+        return [IsAuthenticated(),]
 
 
 class BookViewSet(BaseViewSet):
