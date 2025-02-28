@@ -10,6 +10,7 @@ from user.views import CreateUserView, ManageUserView, BindTelegram
 app_name = "user"
 
 urlpatterns = [
+
     path("register/", CreateUserView.as_view(), name="create"),
     path("me/", ManageUserView.as_view(), name="manage"),
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
