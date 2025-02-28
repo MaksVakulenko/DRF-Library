@@ -13,10 +13,6 @@ class Book(models.Model):
     class CoverType(models.TextChoices):
         HARD = "HARD", "Hardcover"
         SOFT = "SOFT", "Softcover"
-        choices = [
-            (HARD, "Hardcover"),
-            (SOFT, "Softcover"),
-        ]
 
     title = models.CharField(max_length=255)
     author = models.ManyToManyField(Author, related_name="books")
@@ -25,6 +21,5 @@ class Book(models.Model):
     daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
-        return (f"{self.title} by "
-                f"{', '.join(str(author) for author in self.author.all())}"
-                f" ({self.cover})")
+        authors = ', '.join(str(author) for author in self.author.all())
+        return f"{self.title} by {authors} ({self.get_cover_display()})"
