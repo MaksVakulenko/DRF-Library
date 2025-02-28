@@ -52,9 +52,10 @@ class BookViewSet(BaseViewSet):
         queryset = Book.objects.prefetch_related(
             Prefetch("authors", queryset=Author.objects.all())
         ).annotate(
-            Prefetch("authors", queryset=authors, to_attr="authors_list")
+            primary_author_first_name=F("authors__first_name"),
+            primary_author_last_name=F("authors__last_name")
         )
-   
+
         return queryset
 
     def get_serializer_class(self):
