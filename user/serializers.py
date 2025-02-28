@@ -6,8 +6,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("id", "email", "first_name", "last_name", "password", "role")
-        read_only_fields = ("id", "role")
+        fields = ("id", "email", "first_name", "last_name", "password")
+        read_only_fields = ("id", )
         required_fields = ("email", "password")
         extra_kwargs = {
             "password": {
@@ -16,9 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
                 "style": {"input_type": "password"},
             }
         }
-
-    def get_role(self, obj):
-        return obj.get_role_display()
 
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)

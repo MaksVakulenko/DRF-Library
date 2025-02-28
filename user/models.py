@@ -34,23 +34,10 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    class Roles(models.TextChoices):
-        LIBRARIAN = "LIBRARIAN", _("Librarian")
-        READER = "READER", _("Reader")
     username = None
     email = models.EmailField(_("email address"), unique=True)
-    role = models.CharField(
-        max_length=10, choices=Roles, default=Roles.READER
-    )
     chat_id = models.CharField(max_length=9, unique=True, null=True, blank=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
-
-    def save(self, *args, **kwargs):
-        if self.is_staff:
-            self.role = self.Roles.LIBRARIAN
-        else:
-            self.role = self.Roles.READER
-        super().save(*args, **kwargs)
 
     objects = UserManager()

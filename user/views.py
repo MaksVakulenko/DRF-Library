@@ -1,4 +1,5 @@
-from rest_framework import generics
+from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
 
 from user.serializers import UserSerializer
@@ -6,6 +7,7 @@ from user.serializers import UserSerializer
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
+    permission_classes = ()
 
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
@@ -14,5 +16,5 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-class BindTelegram(APIView):
+class BindTelegram(APIView, LoginRequiredMixin):
     ...
