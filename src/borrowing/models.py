@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 
+
 from book.models import Book
 
 
@@ -16,8 +17,9 @@ class Borrowing(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrowings")
 
     @staticmethod
-    def validate_if_user_has_borrowing(user_id: int):
-        if Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True).exists():
+    def validate_if_user_has_expired_borrowing(user_id: int):
+        today = datetime.date.today()
+        if Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True, expected_return_date__lt=today).exists():
             raise ValidationError(
                 {
                     "user": "You already have an active borrowing!"
@@ -46,7 +48,7 @@ class Borrowing(models.Model):
 
     def clean(self):
         if not self.pk:
-            Borrowing.validate_if_user_has_borrowing(self.user_id)
+            Borrowing.validate_if_user_has_expired_borrowing(self.user_id)
             Borrowing.validate_expected_return_date(self.expected_return_date)
             Borrowing.validate_book_inventory(self.book)
 
