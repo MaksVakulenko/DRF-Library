@@ -21,5 +21,5 @@ class Book(models.Model):
     daily_fee = models.DecimalField(max_digits=6, decimal_places=2)
 
     def __str__(self):
-        authors = ', '.join(str(author) for author in self.author.all())
+        authors = ', '.join(str(author) for author in self.authors.all())
         return f"{self.title} by {authors} ({self.get_cover_display()})"

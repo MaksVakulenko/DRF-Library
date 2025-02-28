@@ -44,12 +44,10 @@ class BookViewSet(BaseViewSet):
         authors = Author.objects.all()
 
         queryset = Book.objects.prefetch_related(
-            Prefetch("authors", queryset=authors, to_attr="authors_list")
-        )
-
-        queryset = queryset.annotate(
-            primary_author_first_name=F("authors_list__first_name"),
-            primary_author_last_name=F("authors_list__last_name")
+            Prefetch("authors", queryset=Author.objects.all())
+        ).annotate(
+            primary_author_first_name=F("authors__first_name"),
+            primary_author_last_name=F("authors__last_name")
         )
 
         return queryset
