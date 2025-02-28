@@ -3,6 +3,7 @@ from rest_framework import (
     viewsets,
     filters
 )
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from book.models import (
     Book,
@@ -22,6 +23,11 @@ class BaseViewSet(viewsets.ModelViewSet):
         filters.SearchFilter,
         filters.OrderingFilter
     ]
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAuthenticated(), IsAdminUser()]
+        return super(BaseViewSet, self).get_permissions()
 
 
 class BookViewSet(BaseViewSet):
