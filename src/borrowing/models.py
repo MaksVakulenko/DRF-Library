@@ -45,9 +45,10 @@ class Borrowing(models.Model):
 
 
     def clean(self):
-        Borrowing.validate_if_user_has_borrowing(self.user_id)
-        Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
-        Borrowing.validate_book_inventory(self.book)
+        if not self.pk:
+            Borrowing.validate_if_user_has_borrowing(self.user_id)
+            Borrowing.validate_expected_return_date(self.expected_return_date)
+            Borrowing.validate_book_inventory(self.book)
 
     def save(self, *args, **kwargs):
         self.full_clean()
