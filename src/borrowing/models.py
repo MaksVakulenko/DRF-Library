@@ -34,7 +34,7 @@ class Borrowing(models.Model):
             )
 
     @staticmethod
-    def validate_expected_return_date(expected_date: datetime.date, borrow_date: datetime.date):
+    def validate_expected_return_date(expected_date: datetime.date):
         today = datetime.date.today()
         if expected_date < today:
             raise ValidationError(
@@ -43,17 +43,11 @@ class Borrowing(models.Model):
                 }
             )
 
-        if expected_date <= borrow_date:
-            raise ValidationError(
-                {
-                    "expected_return_date": "Expected return date must be later than the borrow date!"
-                }
-            )
 
     def clean(self):
-        Borrowing.validate_book_inventory(self.book)
-        Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
         Borrowing.validate_if_user_has_borrowing(self.user_id)
+        Borrowing.validate_expected_return_date(self.expected_return_date, self.borrow_date)
+        Borrowing.validate_book_inventory(self.book)
 
     def save(self, *args, **kwargs):
         self.full_clean()
