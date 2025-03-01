@@ -39,11 +39,15 @@ class Payment(models.Model):
 
     @staticmethod
     @transaction.atomic
-    def create_stripe_checkout(request, borrowing: Borrowing, payment_type, total_amount):
+    def create_stripe_checkout(
+        request, borrowing: Borrowing, payment_type, total_amount
+    ):
         """
         Creates a Stripe Checkout Session and returns its URL and session ID.
         """
-        if payment_type == Payment.Type.FINE: # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
+        if (
+            payment_type == Payment.Type.FINE
+        ):  # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
             title = "Library borrowing fine"
         else:
             title = "Library borrowing payment"
