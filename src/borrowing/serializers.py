@@ -1,7 +1,9 @@
+from django.db import transaction
 from rest_framework import serializers
 
 from borrowing.models import Borrowing
 from book.serializers import BookSerializer
+from payment.models import Payment
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -23,12 +25,18 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
         return data
 
-    def create(self, validated_data):
-        book = validated_data["book"]
-        book.inventory -= 1
-        book.save()
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     book = validated_data["book"]
+    #     book.inventory -= 1
+    #     book.save()
+    #     return super().create(validated_data)
 
+    @transaction.atomic
+    def create(self, validated_data):
+        borrowing = super().create(validated_data)
+        checkout_url = Payment.create_stripe_checkout(request=self.context["request"], payment_type=Payment.Type.PAYMENT, borrowing=borrowing, total_amount=borrowing.total_price())
+        borrowing.checkout_url = checkout_url
+        return borrowing
 
 class BorrowingListSerializer(serializers.ModelSerializer):
     is_active = serializers.SerializerMethodField()

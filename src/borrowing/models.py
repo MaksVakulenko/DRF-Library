@@ -4,7 +4,6 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 
-
 from book.models import Book
 
 
@@ -53,7 +52,6 @@ class Borrowing(models.Model):
                 }
             )
 
-
     def clean(self):
         if not self.pk:
             Borrowing.validate_if_user_has_expired_borrowing(self.user_id)
@@ -62,6 +60,10 @@ class Borrowing(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def total_price(self):
+        daily_fee_cents = self.book.daily_fee * 100
+        return (self.expected_return_date - self.borrow_date).days * daily_fee_cents
 
     class Meta:
         ordering = ["actual_return_date", "expected_return_date"]
