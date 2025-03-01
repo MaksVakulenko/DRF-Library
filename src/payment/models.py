@@ -35,19 +35,17 @@ class Payment(models.Model):
 
     @transaction.atomic
     def mark_as_paid(self):
-        """Marks payment as completed and updates borrowing status."""
+        """Marks payment as completed."""
         self.status = self.Status.PAID
         self.save()
-        self.borrowing.status = Borrowing.Status.PAID
-        self.borrowing.save()
 
+    @staticmethod
     @transaction.atomic
-    def create_stripe_checkout(self, request, price_to_pay, borrowing: Borrowing, payment_type: str):
+    def create_stripe_checkout(request, borrowing: Borrowing, payment_type, total_amount):
         """
         Creates a Stripe Checkout Session and returns its URL and session ID.
         """
-
-        if payment_type == self.Type.FINE: # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
+        if payment_type == Payment.Type.FINE: # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
             title = "Library borrowing fine"
         else:
             title = "Library borrowing payment"
@@ -56,7 +54,6 @@ class Payment(models.Model):
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
         # Calculate total price
-        total_amount = borrowing.total_price() # TODO change to use really existing method
 
         user_email = borrowing.user.email if borrowing.user else None
 
@@ -74,7 +71,7 @@ class Payment(models.Model):
                         "product_data": {
                             "name": f"{title}",
                         },
-                        "unit_amount": int(total_amount * 100),  # Stripe works in cents
+                        "unit_amount": int(total_amount),  # Stripe works in cents
                     },
                     "quantity": 1,
                 }
@@ -86,7 +83,7 @@ class Payment(models.Model):
 
         # Create Payment record
         Payment.objects.create(
-            borrowng=borrowing,
+            borrowing=borrowing,
             session_id=checkout_session.id,
             session_url=checkout_session.url,
             amount_of_money=total_amount,
