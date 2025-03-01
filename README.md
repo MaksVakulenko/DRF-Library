@@ -92,11 +92,6 @@ ex:
   ```bash
   docker-compose -f docker-compose-local.yaml up --build
   ```
-  # SpaceReservation Project – Changes & Usage Guide
-
-This guide summarizes the modifications introduced to the SpaceReservation project and explains how to use these changes. It covers updated environment configurations, Docker setup, database initialization, and how to select between different database backends.
-
----
 
 ## Overview of Changes
 

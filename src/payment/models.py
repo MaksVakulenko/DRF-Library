@@ -42,18 +42,15 @@ class Payment(models.Model):
         self.borrowing.save()
 
     @transaction.atomic
-    def create_stripe_checkout(self, request, borrowing: Borrowing, payment_type: str):
+    def create_stripe_checkout(self, request, price_to_pay, borrowing: Borrowing, payment_type: str):
         """
         Creates a Stripe Checkout Session and returns its URL and session ID.
         """
-        if payment_type == "fine": # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
-            payment_type = self.Type.FINE
+
+        if payment_type == self.Type.FINE: # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
             title = "Library borrowing fine"
-            multiplier = 2
         else:
-            payment_type = self.Type.PAYMENT
             title = "Library borrowing payment"
-            multiplier = 1
 
         # Create Stripe Checkout Session
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -77,7 +74,7 @@ class Payment(models.Model):
                         "product_data": {
                             "name": f"{title}",
                         },
-                        "unit_amount": int(total_amount * multiplier * 100),  # Stripe works in cents
+                        "unit_amount": int(total_amount * 100),  # Stripe works in cents
                     },
                     "quantity": 1,
                 }
