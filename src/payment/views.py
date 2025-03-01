@@ -16,6 +16,7 @@ class StripeSuccessAPI(APIView):
     """
     Verifies successful payment using session_id.
     """
+
     serializer_class = EmptySerializer
 
     @transaction.atomic
@@ -24,7 +25,9 @@ class StripeSuccessAPI(APIView):
 
         session_id = request.GET.get("session_id")
         if not session_id:
-            return Response({"error": "Session ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Session ID is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             session = stripe.checkout.Session.retrieve(session_id)
@@ -32,7 +35,9 @@ class StripeSuccessAPI(APIView):
                 # Retrieve payment record by session_id
                 payment = Payment.objects.filter(session_id=session_id).first()
                 if not payment:
-                    return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
+                    return Response(
+                        {"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
+                    )
 
 
                 payment.mark_as_paid()  # Updates payment and ticket statuses
@@ -50,16 +55,21 @@ class StripeSuccessAPI(APIView):
                     payment.borrowing.book.save()
                     return Response({"message": f"Fine payment for borrowing {payment.borrowing.id} successful", "borrowing_id": payment.borrowing.id})
 
-            return Response({"error": "Payment not completed"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Payment not completed"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         except stripe.error.StripeError as e:
-            return Response({"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class StripeCancelAPI(APIView):
     """
     Handles cases where the user cancels the payment.
     """
+
     serializer_class = EmptySerializer
 
     def get(self, request):

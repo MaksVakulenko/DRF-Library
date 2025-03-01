@@ -17,5 +17,5 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-class BindTelegram(APIView, LoginRequiredMixin):
-    ...
+
+class BindTelegram(APIView, LoginRequiredMixin): ...
