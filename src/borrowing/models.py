@@ -19,10 +19,11 @@ class Borrowing(models.Model):
     @staticmethod
     def validate_if_user_has_expired_borrowing(user_id: int):
         today = datetime.date.today()
-        if Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True, expected_return_date__lt=today).exists():
+        expired_books = Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True, expected_return_date__lt=today)
+        if expired_books.exists():
             raise ValidationError(
                 {
-                    "user": "You already have an active borrowing!"
+                    "user": f"You have an expired borrowing!"
                 }
             )
 
@@ -38,6 +39,13 @@ class Borrowing(models.Model):
     @staticmethod
     def validate_expected_return_date(expected_date: datetime.date):
         today = datetime.date.today()
+        if expected_date == today:
+            raise ValidationError(
+                {
+                    "expected_return_date": "You have to borrow the book for at least one day!"
+                }
+            )
+
         if expected_date < today:
             raise ValidationError(
                 {
@@ -50,8 +58,10 @@ class Borrowing(models.Model):
         if not self.pk:
             Borrowing.validate_if_user_has_expired_borrowing(self.user_id)
             Borrowing.validate_expected_return_date(self.expected_return_date)
-            Borrowing.validate_book_inventory(self.book)
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["-expected_return_date"]
