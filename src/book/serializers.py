@@ -5,15 +5,10 @@ from book.models import Book, Author
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = [
-            "id",
-            "first_name",
-            "last_name"
-        ]
+        fields = ["id", "first_name", "last_name"]
 
 
 class BookSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Book
         fields = "__all__"
@@ -32,11 +27,4 @@ class BookRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = [
-            "id",
-            "title",
-            "authors",
-            "cover",
-            "inventory",
-            "daily_fee"
-        ]
+        fields = ["id", "title", "authors", "cover", "inventory", "daily_fee"]

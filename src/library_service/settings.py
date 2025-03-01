@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -27,7 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-rss$h-n(6zgb=!qncu8abk*^y^vb+5zk05rev)(bp7$3^4ls4n")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-rss$h-n(6zgb=!qncu8abk*^y^vb+5zk05rev)(bp7$3^4ls4n"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -44,13 +47,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # custom apps:
     "book",
     "borrowing",
     "user",
     "payment",
-
     # third-party apps:
     "rest_framework",
     "debug_toolbar",
@@ -98,12 +99,10 @@ DB_SQLITE = "sqlite"
 DB_POSTGRESQL = "postgresql"
 
 DATABASES_ALL = {
-
     DB_SQLITE: {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
-
     DB_POSTGRESQL: {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": os.environ.get("POSTGRES_HOST"),
@@ -171,13 +170,11 @@ INTERNAL_IPS = [
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    )
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 
@@ -193,11 +190,11 @@ SPECTACULAR_SETTINGS = {
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = "user.User"
 
 SIMPLE_JWT = {
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZE",
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=60), # TODO Don't forget to change
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=60),  # TODO Don't forget to change
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
 }

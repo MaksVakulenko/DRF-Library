@@ -1,10 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from book.views import (
-    BookViewSet,
-    AuthorViewSet
-)
+from book.views import BookViewSet, AuthorViewSet
 
 
 router = routers.DefaultRouter()

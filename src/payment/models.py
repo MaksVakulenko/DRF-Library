@@ -29,9 +29,7 @@ class Payment(models.Model):
     status = models.IntegerField(
         choices=Status.choices, default=Status.PENDING
     )  # Payment status
-    type = models.IntegerField(
-        choices=Type.choices
-    )
+    type = models.IntegerField(choices=Type.choices)
 
     @transaction.atomic
     def mark_as_paid(self):
@@ -46,7 +44,9 @@ class Payment(models.Model):
         """
         Creates a Stripe Checkout Session and returns its URL and session ID.
         """
-        if payment_type == "fine": # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
+        if (
+            payment_type == "fine"
+        ):  # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
             payment_type = self.Type.FINE
             title = "Library borrowing fine"
             multiplier = 2
@@ -59,12 +59,16 @@ class Payment(models.Model):
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
         # Calculate total price
-        total_amount = borrowing.total_price() # TODO change to use really existing method
+        total_amount = (
+            borrowing.total_price()
+        )  # TODO change to use really existing method
 
         user_email = borrowing.user.email if borrowing.user else None
 
-        success_url = request.build_absolute_uri(
-            reverse("payment:stripe-success")) + "?session_id={CHECKOUT_SESSION_ID}"
+        success_url = (
+            request.build_absolute_uri(reverse("payment:stripe-success"))
+            + "?session_id={CHECKOUT_SESSION_ID}"
+        )
         cancel_url = request.build_absolute_uri(reverse("payment:stripe-cancel"))
 
         checkout_session = stripe.checkout.Session.create(
@@ -77,7 +81,9 @@ class Payment(models.Model):
                         "product_data": {
                             "name": f"{title}",
                         },
-                        "unit_amount": int(total_amount * multiplier * 100),  # Stripe works in cents
+                        "unit_amount": int(
+                            total_amount * multiplier * 100
+                        ),  # Stripe works in cents
                     },
                     "quantity": 1,
                 }
@@ -98,6 +104,6 @@ class Payment(models.Model):
         )
 
         return checkout_session.url
-    
+
     def __str__(self):
         return f"Payment for Borrowing {self.borrowing.id}: {self.type} - {self.get_status_display()} (${self.amount_of_money})"
