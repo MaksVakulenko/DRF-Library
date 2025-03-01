@@ -64,4 +64,4 @@ class Borrowing(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["expected_return_date"]
+        ordering = ["actual_return_date", "expected_return_date"]
