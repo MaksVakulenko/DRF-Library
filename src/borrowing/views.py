@@ -10,17 +10,18 @@ from borrowing.serializers import (
     BorrowingSerializer,
     BorrowingListSerializer,
     BorrowingDetailSerializer,
-    BorrowingReturnSerializer
+    BorrowingReturnSerializer,
 )
 from payment.models import Payment
 
 MULTIPLIER = 2
 
+
 class BorrowingViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
     queryset = Borrowing.objects.all()
 
@@ -46,16 +47,26 @@ class BorrowingViewSet(
         borrowing = self.get_object()
 
         if borrowing.actual_return_date is not None:
-            return Response({"This book has already been returned"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"This book has already been returned"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         today = datetime.date.today()
         if today > borrowing.expected_return_date:
             days_expired = (today - borrowing.expected_return_date).days
             fine = int((borrowing.book.daily_fee * days_expired) * 100) * MULTIPLIER
-            checkout_url = Payment.create_stripe_checkout(request=request, borrowing=borrowing, payment_type=Payment.Type.FINE, total_amount=fine)
+            checkout_url = Payment.create_stripe_checkout(
+                request=request,
+                borrowing=borrowing,
+                payment_type=Payment.Type.FINE,
+                total_amount=fine,
+            )
             return Response({"redirect_url": checkout_url}, status=status.HTTP_200_OK)
 
-        serializer = BorrowingReturnSerializer(borrowing, data={"actual_return_date": today}, partial=True)
+        serializer = BorrowingReturnSerializer(
+            borrowing, data={"actual_return_date": today}, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -70,10 +81,14 @@ class BorrowingViewSet(
         Creates a reservation and returns a `payment_url`.
         """
         # Validate request payload
-        serializer = BorrowingSerializer(data=request.data, context={"request": request})
+        serializer = BorrowingSerializer(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
         # Save reservation and tickets
         self.perform_create(serializer)
         borrowing = serializer.instance
         # reservation.refresh_from_db()
-        return Response({"redirect_url": borrowing.checkout_url}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"redirect_url": borrowing.checkout_url}, status=status.HTTP_201_CREATED
+        )
