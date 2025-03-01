@@ -29,9 +29,7 @@ class Payment(models.Model):
     status = models.IntegerField(
         choices=Status.choices, default=Status.PENDING
     )  # Payment status
-    type = models.IntegerField(
-        choices=Type.choices
-    )
+    type = models.IntegerField(choices=Type.choices)
 
     @transaction.atomic
     def mark_as_paid(self):
@@ -57,8 +55,10 @@ class Payment(models.Model):
 
         user_email = borrowing.user.email if borrowing.user else None
 
-        success_url = request.build_absolute_uri(
-            reverse("payment:stripe-success")) + "?session_id={CHECKOUT_SESSION_ID}"
+        success_url = (
+            request.build_absolute_uri(reverse("payment:stripe-success"))
+            + "?session_id={CHECKOUT_SESSION_ID}"
+        )
         cancel_url = request.build_absolute_uri(reverse("payment:stripe-cancel"))
 
         checkout_session = stripe.checkout.Session.create(
@@ -92,6 +92,6 @@ class Payment(models.Model):
         )
 
         return checkout_session.url
-    
+
     def __str__(self):
         return f"Payment for Borrowing {self.borrowing.id}: {self.type} - {self.get_status_display()} (${self.amount_of_money})"
