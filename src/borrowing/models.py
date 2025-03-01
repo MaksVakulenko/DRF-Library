@@ -19,11 +19,15 @@ class Borrowing(models.Model):
     )
 
     @staticmethod
-    def validate_if_user_has_borrowing(user_id: int):
-        if Borrowing.objects.filter(
-            user_id=user_id, actual_return_date__isnull=True
-        ).exists():
-            raise ValidationError({"user": "You already have an active borrowing!"})
+    def validate_if_user_has_expired_borrowing(user_id: int):
+        today = datetime.date.today()
+        expired_books = Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True, expected_return_date__lt=today)
+        if expired_books.exists():
+            raise ValidationError(
+                {
+                    "user": f"You have an expired borrowing!"
+                }
+            )
 
     @staticmethod
     def validate_book_inventory(book: Book) -> None:
@@ -31,29 +35,34 @@ class Borrowing(models.Model):
             raise ValidationError({"book": f"The book {book.title} is out of stock!"})
 
     @staticmethod
-    def validate_expected_return_date(
-        expected_date: datetime.date, borrow_date: datetime.date
-    ):
+    def validate_expected_return_date(expected_date: datetime.date):
         today = datetime.date.today()
-        if expected_date < today:
-            raise ValidationError(
-                {"expected_return_date": "Expected return date can't be in the past!"}
-            )
-
-        if expected_date <= borrow_date:
+        if expected_date == today:
             raise ValidationError(
                 {
-                    "expected_return_date": "Expected return date must be later than the borrow date!"
+                    "expected_return_date": "You have to borrow the book for at least one day!"
+                }
+            )
+
+        if expected_date < today:
+            raise ValidationError(
+                {
+                    "expected_return_date": "Expected return date can't be in the past!"
                 }
             )
 
     def clean(self):
-        Borrowing.validate_book_inventory(self.book)
-        Borrowing.validate_expected_return_date(
-            self.expected_return_date, self.borrow_date
-        )
-        Borrowing.validate_if_user_has_borrowing(self.user_id)
+        if not self.pk:
+            Borrowing.validate_if_user_has_expired_borrowing(self.user_id)
+            Borrowing.validate_expected_return_date(self.expected_return_date)
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def total_price(self):
+        daily_fee_cents = self.book.daily_fee * 100
+        return (self.expected_return_date - self.borrow_date).days * daily_fee_cents
+
+    class Meta:
+        ordering = ["actual_return_date", "expected_return_date"]

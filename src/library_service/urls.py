@@ -29,6 +29,8 @@ urlpatterns = [
         name="redoc",
     ),
     path("api/library/", include("book.urls", namespace="book")),
+    path("api/library/", include("borrowing.urls", namespace="borrowing")),
     path("api/user/", include("user.urls", namespace="user")),
     path("api/payment/", include("payment.urls", namespace="payment")),
+
 ] + debug_toolbar_urls()
