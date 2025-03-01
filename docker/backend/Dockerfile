@@ -15,5 +15,4 @@ ADD ./src /app/backend
 ADD ./docker /app/docker
 
 RUN dos2unix /app/docker/backend/server-entrypoint.sh
-RUN chmod +x /app/docker/backend/server-entrypoint.sh
 #RUN chmod +x /app/docker/backend/worker-entrypoint.sh ----> will be needed for celery worker
