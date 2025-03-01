@@ -34,9 +34,15 @@ class BorrowingSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         borrowing = super().create(validated_data)
-        checkout_url = Payment.create_stripe_checkout(request=self.context["request"], payment_type=Payment.Type.PAYMENT, borrowing=borrowing, total_amount=borrowing.total_price())
+        checkout_url = Payment.create_stripe_checkout(
+            request=self.context["request"],
+            payment_type=Payment.Type.PAYMENT,
+            borrowing=borrowing,
+            total_amount=borrowing.total_price(),
+        )
         borrowing.checkout_url = checkout_url
         return borrowing
+
 
 class BorrowingListSerializer(serializers.ModelSerializer):
     is_active = serializers.SerializerMethodField()

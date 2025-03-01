@@ -39,21 +39,34 @@ class StripeSuccessAPI(APIView):
                         {"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
                     )
 
-
                 payment.mark_as_paid()  # Updates payment and ticket statuses
 
                 if payment.type == Payment.Type.PAYMENT:
                     payment.borrowing.book.inventory -= 1
                     payment.borrowing.book.save()
-                    return Response({"message": "Payment successful", "borrowing_id": payment.borrowing.id})
+                    return Response(
+                        {
+                            "message": "Payment successful",
+                            "borrowing_id": payment.borrowing.id,
+                        }
+                    )
                 else:
                     today = datetime.date.today()
-                    serializer = BorrowingReturnSerializer(payment.borrowing, data={"actual_return_date": today}, partial=True)
+                    serializer = BorrowingReturnSerializer(
+                        payment.borrowing,
+                        data={"actual_return_date": today},
+                        partial=True,
+                    )
                     serializer.is_valid(raise_exception=True)
                     serializer.save()
                     payment.borrowing.book.inventory += 1
                     payment.borrowing.book.save()
-                    return Response({"message": f"Fine payment for borrowing {payment.borrowing.id} successful", "borrowing_id": payment.borrowing.id})
+                    return Response(
+                        {
+                            "message": f"Fine payment for borrowing {payment.borrowing.id} successful",
+                            "borrowing_id": payment.borrowing.id,
+                        }
+                    )
 
             return Response(
                 {"error": "Payment not completed"}, status=status.HTTP_400_BAD_REQUEST
@@ -73,4 +86,14 @@ class StripeCancelAPI(APIView):
     serializer_class = EmptySerializer
 
     def get(self, request):
-        return Response({"message": "Payment was cancelled. You can try again."})
+        user = request.user
+        payment = Payment.objects.get(
+            borrowing__user=user, status=Payment.Status.PENDING
+        )
+
+        return Response(
+            {
+                "message": f"Payment was cancelled. You can try again.",
+                "redirect_url": payment.session_url,
+            }
+        )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[

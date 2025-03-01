@@ -21,13 +21,13 @@ class Borrowing(models.Model):
     @staticmethod
     def validate_if_user_has_expired_borrowing(user_id: int):
         today = datetime.date.today()
-        expired_books = Borrowing.objects.filter(user_id=user_id, actual_return_date__isnull=True, expected_return_date__lt=today)
+        expired_books = Borrowing.objects.filter(
+            user_id=user_id,
+            actual_return_date__isnull=True,
+            expected_return_date__lt=today,
+        )
         if expired_books.exists():
-            raise ValidationError(
-                {
-                    "user": f"You have an expired borrowing!"
-                }
-            )
+            raise ValidationError({"user": f"You have an expired borrowing!"})
 
     @staticmethod
     def validate_book_inventory(book: Book) -> None:
@@ -46,9 +46,7 @@ class Borrowing(models.Model):
 
         if expected_date < today:
             raise ValidationError(
-                {
-                    "expected_return_date": "Expected return date can't be in the past!"
-                }
+                {"expected_return_date": "Expected return date can't be in the past!"}
             )
 
     def clean(self):
