@@ -1,0 +1,392 @@
+[
+{
+    "model": "user.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$TPrAmbifv0aw2c0EmYDMHN$BUjXkEFJB1eXZSM4uC9w01QKW5vkerEq9jLfTNYbU28=",
+        "last_login": null,
+        "is_superuser": true,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-03-01T19:35:17.903Z",
+        "email": "admin@admin.com",
+        "chat_id": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "user.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$5OJdoWpoCT2OSvm9r7FRCv$alaNfcfnhaj/TkaabGAkvWnkvxEJrwIzyFZoAh57OsQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-03-01T19:52:03.974Z",
+        "email": "example@user.com",
+        "chat_id": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "book.author",
+    "pk": 1,
+    "fields": {
+        "first_name": "William",
+        "last_name": "Shakespeare "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 2,
+    "fields": {
+        "first_name": "Jane ",
+        "last_name": "Austen "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 3,
+    "fields": {
+        "first_name": "George ",
+        "last_name": "Orwell "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 4,
+    "fields": {
+        "first_name": "J.K.",
+        "last_name": "Rowling "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 5,
+    "fields": {
+        "first_name": "Mark ",
+        "last_name": "Twain "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 6,
+    "fields": {
+        "first_name": "Charles ",
+        "last_name": "Dickens "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 7,
+    "fields": {
+        "first_name": "Ernest ",
+        "last_name": "Hemingway "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 8,
+    "fields": {
+        "first_name": "F. Scott",
+        "last_name": "Fitzgerald "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 9,
+    "fields": {
+        "first_name": "J.R.R. ",
+        "last_name": "Tolkien "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 10,
+    "fields": {
+        "first_name": "Agatha ",
+        "last_name": "Christie "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 11,
+    "fields": {
+        "first_name": "Stephen ",
+        "last_name": "King "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 12,
+    "fields": {
+        "first_name": "Virginia ",
+        "last_name": "Woolf "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 13,
+    "fields": {
+        "first_name": "Franz ",
+        "last_name": "Kafka "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 14,
+    "fields": {
+        "first_name": "Herman ",
+        "last_name": "Melville "
+    }
+},
+{
+    "model": "book.author",
+    "pk": 15,
+    "fields": {
+        "first_name": "Oscar ",
+        "last_name": "Wilde "
+    }
+},
+{
+    "model": "book.book",
+    "pk": 1,
+    "fields": {
+        "title": "Hamlet",
+        "cover": "HARD",
+        "inventory": 2,
+        "daily_fee": "15.00",
+        "authors": [
+            1
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 2,
+    "fields": {
+        "title": "Pride and Prejudice",
+        "cover": "SOFT",
+        "inventory": 1,
+        "daily_fee": "10.00",
+        "authors": [
+            2
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 3,
+    "fields": {
+        "title": "Romeo and Juliet",
+        "cover": "SOFT",
+        "inventory": 6,
+        "daily_fee": "3.00",
+        "authors": [
+            1
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 4,
+    "fields": {
+        "title": "Pride and Prejudice",
+        "cover": "SOFT",
+        "inventory": 2,
+        "daily_fee": "5.00",
+        "authors": [
+            2
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 5,
+    "fields": {
+        "title": "1984",
+        "cover": "HARD",
+        "inventory": 3,
+        "daily_fee": "6.00",
+        "authors": [
+            3
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 6,
+    "fields": {
+        "title": "Animal Farm",
+        "cover": "HARD",
+        "inventory": 2,
+        "daily_fee": "6.00",
+        "authors": [
+            3
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 7,
+    "fields": {
+        "title": "The Adventures of Tom Sawyer",
+        "cover": "SOFT",
+        "inventory": 10,
+        "daily_fee": "7.00",
+        "authors": [
+            5
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 8,
+    "fields": {
+        "title": "Oliver Twist",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            6
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 9,
+    "fields": {
+        "title": "The Old Man and the Sea",
+        "cover": "SOFT",
+        "inventory": 8,
+        "daily_fee": "7.00",
+        "authors": [
+            7
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 10,
+    "fields": {
+        "title": "The Great Gatsby",
+        "cover": "HARD",
+        "inventory": 15,
+        "daily_fee": "5.00",
+        "authors": [
+            8
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 11,
+    "fields": {
+        "title": "The Lord of the Rings",
+        "cover": "HARD",
+        "inventory": 15,
+        "daily_fee": "5.00",
+        "authors": [
+            9
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 12,
+    "fields": {
+        "title": "The Hobbit",
+        "cover": "HARD",
+        "inventory": 20,
+        "daily_fee": "5.00",
+        "authors": [
+            9
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 13,
+    "fields": {
+        "title": "Murder on the Orient Express",
+        "cover": "SOFT",
+        "inventory": 10,
+        "daily_fee": "3.00",
+        "authors": [
+            10
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 14,
+    "fields": {
+        "title": "The Shining",
+        "cover": "HARD",
+        "inventory": 5,
+        "daily_fee": "6.00",
+        "authors": [
+            11
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 15,
+    "fields": {
+        "title": "Mrs Dalloway",
+        "cover": "SOFT",
+        "inventory": 10,
+        "daily_fee": "7.00",
+        "authors": [
+            12
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 16,
+    "fields": {
+        "title": "The Metamorphosis",
+        "cover": "SOFT",
+        "inventory": 11,
+        "daily_fee": "6.00",
+        "authors": [
+            13
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 17,
+    "fields": {
+        "title": "Moby-Dick",
+        "cover": "HARD",
+        "inventory": 15,
+        "daily_fee": "10.00",
+        "authors": [
+            14
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 18,
+    "fields": {
+        "title": "The Picture of Dorian Gray",
+        "cover": "HARD",
+        "inventory": 20,
+        "daily_fee": "9.00",
+        "authors": [
+            15
+        ]
+    }
+}
+]

@@ -3,8 +3,6 @@ from django.conf import settings
 from django.db import models, transaction
 from rest_framework.reverse import reverse
 
-from borrowing.models import Borrowing
-
 
 class Payment(models.Model):
     """Model representing a Stripe payment for a borrowing."""
@@ -19,9 +17,9 @@ class Payment(models.Model):
         FINE = -1, "FINE"
 
     borrowing = models.ForeignKey(
-        Borrowing, on_delete=models.DO_NOTHING, related_name="payments"
+        "borrowing.Borrowing", on_delete=models.DO_NOTHING, related_name="payments"
     )
-    session_url = models.URLField()  # Stripe checkout session URL
+    session_url = models.URLField(max_length=500)  # Stripe checkout session URL
     session_id = models.CharField(max_length=255)  # Stripe session ID
     amount_of_money = models.DecimalField(
         max_digits=10, decimal_places=2
@@ -40,14 +38,14 @@ class Payment(models.Model):
     @staticmethod
     @transaction.atomic
     def create_stripe_checkout(
-        request, borrowing: Borrowing, payment_type, total_amount
+        request, borrowing, payment_type, total_amount
     ):
         """
         Creates a Stripe Checkout Session and returns its URL and session ID.
         """
         if (
             payment_type == Payment.Type.FINE
-        ):  # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
+        ):
             title = "Library borrowing fine"
         else:
             title = "Library borrowing payment"
@@ -55,9 +53,7 @@ class Payment(models.Model):
         # Create Stripe Checkout Session
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        # Calculate total price
-
-        user_email = borrowing.user.email if borrowing.user else None
+        user_email = borrowing.user.email
 
         success_url = (
             request.build_absolute_uri(reverse("payment:stripe-success"))
@@ -98,4 +94,4 @@ class Payment(models.Model):
         return checkout_session.url
 
     def __str__(self):
-        return f"Payment for Borrowing {self.borrowing.id}: {self.type} - {self.get_status_display()} (${self.amount_of_money})"
+        return f"Payment for Borrowing {self.borrowing.id}: {self.get_type_display()} - {self.get_status_display()} (${self.amount_of_money / 100})"

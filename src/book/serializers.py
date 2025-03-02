@@ -28,3 +28,7 @@ class BookRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ["id", "title", "authors", "cover", "inventory", "daily_fee"]
+
+
+class BookDetailBorrowingSerializer(BookSerializer):
+    authors = serializers.StringRelatedField(many=True)
