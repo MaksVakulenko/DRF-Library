@@ -45,7 +45,7 @@ class Payment(models.Model):
         """
         if (
             payment_type == Payment.Type.FINE
-        ):  # TODO можливо переробити логіку, щоб якщо надіслали суму пені - то тоді це пеня і все інше if fine: ...
+        ):
             title = "Library borrowing fine"
         else:
             title = "Library borrowing payment"
@@ -53,9 +53,7 @@ class Payment(models.Model):
         # Create Stripe Checkout Session
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        # Calculate total price
-
-        user_email = borrowing.user.email if borrowing.user else None
+        user_email = borrowing.user.email
 
         success_url = (
             request.build_absolute_uri(reverse("payment:stripe-success"))

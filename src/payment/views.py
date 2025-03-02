@@ -86,35 +86,14 @@ class StripeCancelAPI(APIView):
     serializer_class = EmptySerializer
 
     def get(self, request):
-        return Response({"message": "Payment was cancelled. You can try again."})
+        user = request.user
+        payment = Payment.objects.get(
+            borrowing__user=user, status=Payment.Status.PENDING
+        )
 
-
-class PaymentListView(APIView):
-    """
-    Allows to see all payments fow administrators
-    and list of their own payments for users.
-    """
-    def get(self, request):
-        if self.request.user.is_staff:
-            payments = Payment.objects.all()
-        else:
-            payments = Payment.objects.filter(borrowing__user=request.user)
-        serializer = PaymentSerializer(payments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class PaymentDetailView(APIView):
-    """
-    Allows to see details about the payment.
-    """
-    def get(self, request, pk):
-        try:
-            payment = Payment.objects.get(pk=pk)
-        except Payment.DoesNotExist:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        if not request.user.is_staff and payment.borrowing.user != request.user:
-            return Response({"detail": "You do not have permission to view this payment."},
-                            status=status.HTTP_403_FORBIDDEN)
-        serializer = PaymentSerializer(payment)
-        return Response(serializer.data, status.HTTP_200_OK)
+        return Response(
+            {
+                "message": f"Payment was cancelled. You can try again.",
+                "redirect_url": payment.session_url,
+            }
+        )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[
