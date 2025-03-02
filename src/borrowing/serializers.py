@@ -20,6 +20,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
 
         Borrowing.validate_if_user_has_expired_borrowing(user.id)
+        Borrowing.validate_if_user_has_pending_payment(user.id)
         Borrowing.validate_expected_return_date(data["expected_return_date"])
         Borrowing.validate_book_inventory(data["book"])
 

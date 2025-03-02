@@ -5,6 +5,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 from book.models import Book
+from payment.models import Payment
 
 
 class Borrowing(models.Model):
@@ -49,10 +50,22 @@ class Borrowing(models.Model):
                 {"expected_return_date": "Expected return date can't be in the past!"}
             )
 
+    @staticmethod
+    def validate_if_user_has_pending_payment(user_id: int):
+        payment = Payment.objects.filter(
+            borrowing__user_id=user_id,
+            status=Payment.Status.PENDING
+        )
+        if payment.exists():
+            raise ValidationError(
+                {"payment": "You have a pending payment!"}
+            )
+
     def clean(self):
         if not self.pk:
             Borrowing.validate_if_user_has_expired_borrowing(self.user_id)
             Borrowing.validate_expected_return_date(self.expected_return_date)
+            Borrowing.validate_if_user_has_pending_payment(self.user_id)
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -66,4 +79,4 @@ class Borrowing(models.Model):
         return self.days_to_pay_for() * daily_fee_cents
 
     class Meta:
-        ordering = ["actual_return_date", "expected_return_date"]
+        ordering = ["-actual_return_date", "expected_return_date"]
