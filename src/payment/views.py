@@ -86,4 +86,8 @@ class StripeCancelAPI(APIView):
     serializer_class = EmptySerializer
 
     def get(self, request):
-        return Response({"message": "Payment was cancelled. You can try again."})
+        user = request.user
+        payment = Payment.objects.get(borrowing__user=user, status=Payment.Status.PENDING)
+
+        return Response({"message": f"Payment was cancelled. You can try again.",
+                         "redirect_url": payment.session_url}) # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[
