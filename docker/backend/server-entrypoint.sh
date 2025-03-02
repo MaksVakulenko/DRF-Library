@@ -5,7 +5,7 @@ do
     echo "Waiting for Django application (server volume)..."
 done
 
-until python manage.py migrate
+until python manage.py makemigrations && python manage.py migrate
 do
     echo "Waiting for database..."
     sleep 2
