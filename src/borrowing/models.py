@@ -58,9 +58,12 @@ class Borrowing(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
+    def days_to_pay_for(self):
+        return (self.expected_return_date - self.borrow_date).days
+
     def total_price(self):
         daily_fee_cents = self.book.daily_fee * 100
-        return (self.expected_return_date - self.borrow_date).days * daily_fee_cents
+        return self.days_to_pay_for() * daily_fee_cents
 
     class Meta:
         ordering = ["actual_return_date", "expected_return_date"]

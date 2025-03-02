@@ -98,4 +98,4 @@ class Payment(models.Model):
         return checkout_session.url
 
     def __str__(self):
-        return f"Payment for Borrowing {self.borrowing.id}: {self.type} - {self.get_status_display()} (${self.amount_of_money / 100})"
+        return f"Payment for Borrowing {self.borrowing.id}: {self.get_type_display()} - {self.get_status_display()} (${self.amount_of_money / 100})"

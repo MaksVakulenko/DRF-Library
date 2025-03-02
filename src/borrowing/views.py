@@ -78,17 +78,15 @@ class BorrowingViewSet(
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         """
-        Creates a reservation and returns a `payment_url`.
+        Creates a borrowing and returns a `payment_url`.
         """
         # Validate request payload
         serializer = BorrowingSerializer(
             data=request.data, context={"request": request}
         )
         serializer.is_valid(raise_exception=True)
-        # Save reservation and tickets
         self.perform_create(serializer)
         borrowing = serializer.instance
-        # reservation.refresh_from_db()
         return Response(
             {"redirect_url": borrowing.checkout_url}, status=status.HTTP_201_CREATED
         )
