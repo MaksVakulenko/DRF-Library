@@ -98,7 +98,7 @@ class PaymentListView(APIView):
         if self.request.user.is_staff:
             payments = Payment.objects.all()
         else:
-            payments = Payment.objects.filter(borrowing__user__id=self.request.user.id)
+            payments = Payment.objects.filter(borrowing__user=request.user)
         serializer = PaymentSerializer(payments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
