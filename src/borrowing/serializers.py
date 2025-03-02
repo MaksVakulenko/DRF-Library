@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from borrowing.models import Borrowing
-from book.serializers import BookSerializer
+from book.serializers import BookDetailBorrowingSerializer
 from payment.models import Payment
 
 
@@ -46,7 +46,8 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
 class BorrowingListSerializer(serializers.ModelSerializer):
     is_active = serializers.SerializerMethodField()
-    book = serializers.CharField(source="book.title")
+    book = serializers.StringRelatedField()
+    payments = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Borrowing
@@ -57,6 +58,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
             "actual_return_date",
             "book",
             "is_active",
+            "payments",
         )
 
     def get_is_active(self, obj):
@@ -64,7 +66,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
 
 
 class BorrowingDetailSerializer(BorrowingListSerializer):
-    book = BookSerializer()
+    book = BookDetailBorrowingSerializer()
 
 
 class BorrowingReturnSerializer(serializers.ModelSerializer):
