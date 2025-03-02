@@ -1,6 +1,6 @@
 from django.db.models import Prefetch, F
 from rest_framework import viewsets, filters
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 from book.models import Book, Author
 
@@ -16,10 +16,16 @@ class BaseViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
 
     def get_permissions(self):
+        """
+        All users can see list of books and authors.
+        But only admins can edit list of books and authors.
+        """
         if self.action in ("create", "update", "partial_update", "destroy"):
             return [IsAuthenticated(), IsAdminUser()]
+        if self.action in ("list", "retrieve"):
+            return [AllowAny(),]
         return [
-            IsAuthenticated(),
+            IsAuthenticated()
         ]
 
 
