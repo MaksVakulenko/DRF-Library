@@ -3,13 +3,13 @@ import datetime
 import stripe
 from django.conf import settings
 from django.db import transaction
-from rest_framework import status
+from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from borrowing.serializers import BorrowingReturnSerializer
 from payment.models import Payment
-from payment.serializers import EmptySerializer
+from payment.serializers import EmptySerializer, PaymentSerializer
 
 
 class StripeSuccessAPI(APIView):
@@ -86,4 +86,14 @@ class StripeCancelAPI(APIView):
     serializer_class = EmptySerializer
 
     def get(self, request):
-        return Response({"message": "Payment was cancelled. You can try again."})
+        user = request.user
+        payment = Payment.objects.get(
+            borrowing__user=user, status=Payment.Status.PENDING
+        )
+
+        return Response(
+            {
+                "message": f"Payment was cancelled. You can try again.",
+                "redirect_url": payment.session_url,
+            }
+        )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[

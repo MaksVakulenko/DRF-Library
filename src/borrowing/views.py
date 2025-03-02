@@ -1,6 +1,8 @@
 import datetime
 
 from django.db import transaction
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -33,7 +35,20 @@ class BorrowingViewSet(
         return BorrowingSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        """
+        Allows admins to see borrowing records for specific user.
+        Also allows user see their own borrowing records and
+        filter them by active status of borrowing.
+        """
+        queryset = self.queryset
+        if is_active := self.request.query_params.get("is_active"):
+            queryset = queryset.filter(actual_return_date__isnull=True) if is_active in ("True", "true", "1") \
+                else queryset.filter(actual_return_date__isnull=False)
+        # Filtering for admins
+        if self.request.user.is_staff:
+            user_id = self.request.query_params.get("user_id")
+            return queryset.filter(user__id=user_id) if user_id else queryset
+        return queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -78,17 +93,35 @@ class BorrowingViewSet(
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         """
-        Creates a reservation and returns a `payment_url`.
+        Creates a borrowing and returns a `payment_url`.
         """
         # Validate request payload
         serializer = BorrowingSerializer(
             data=request.data, context={"request": request}
         )
         serializer.is_valid(raise_exception=True)
-        # Save reservation and tickets
         self.perform_create(serializer)
         borrowing = serializer.instance
-        # reservation.refresh_from_db()
         return Response(
             {"redirect_url": borrowing.checkout_url}, status=status.HTTP_201_CREATED
         )
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="is_active",
+                description="Filter borrowings by status of borrowing.",
+                required=False,
+                type=OpenApiTypes.STR,
+            ),
+            OpenApiParameter(
+                name="user_id",
+                description="Filter borrowings by user id (available only for admin users)",
+                required=False,
+                type=OpenApiTypes.INT,
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        """List of borrowings."""
+        return super().list(request, *args, **kwargs)
