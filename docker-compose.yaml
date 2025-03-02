@@ -25,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/backend/Dockerfile
-    entrypoint: /app/docker/backend/server-entrypoint.sh
+    entrypoint: ["sh", "/app/docker/backend/server-entrypoint.sh"]
     working_dir: /app/backend
     env_file:
       - .env
