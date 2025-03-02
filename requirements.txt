@@ -13,7 +13,9 @@ click-repl==0.3.0
 cron-descriptor==1.4.5
 distlib==0.3.9
 Django==5.1.6
+django-appconf==1.1.0
 django-celery-beat==2.7.0
+django-celery-email==3.0.0
 django-debug-toolbar==5.0.1
 django-timezone-field==7.1
 djangorestframework==3.15.2
@@ -39,6 +41,7 @@ python-crontab==3.2.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 PyYAML==6.0.2
+redis==5.2.1
 referencing==0.36.2
 requests==2.32.3
 rpds-py==0.23.1

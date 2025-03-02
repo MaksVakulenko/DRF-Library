@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from user.views import CreateUserView, ManageUserView, BindTelegram
+from user.views import CreateUserView, ManageUserView, BindTelegram, VerifyEmailView
 
 app_name = "user"
 
@@ -16,4 +16,5 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("bind-telegram/<str:code>/", BindTelegram.as_view(), name="bind_telegram"),
+    path("verify-email/<str:uidb64>/<str:token>/", VerifyEmailView.as_view(), name="verify_email"),
 ]
