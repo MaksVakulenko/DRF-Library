@@ -58,7 +58,6 @@ class BorrowingViewSet(
 
     @extend_schema(
         parameters=swagger.borrow_id_parameter,
-        examples=swagger.borrowing_return_example
     )
     @action(
         methods=["POST"],

@@ -14,7 +14,7 @@ post_authors_example=[
 author_id_parameter=[
     OpenApiParameter(
         name='id',
-        description='Get author by id = 1',
+        description='Get author by id',
         required=True,
         type=int,
         location=OpenApiParameter.PATH,
@@ -51,13 +51,12 @@ patch_author_example=[
 author_id_parameter_to_delete=[
     OpenApiParameter(
         name='id',
-        description='Get author by id = 25',
+        description='Delete author by id',
         required=True,
         type=int,
         location=OpenApiParameter.PATH,
         examples=[OpenApiExample(
             name='author',
-            value=25
         )]
     )
 ]
@@ -72,11 +71,9 @@ author_search_and_ordering_parameters = [
         examples=[
             OpenApiExample(
                 name="author's first name",
-                value="Virginia"
             ),
             OpenApiExample(
                 name="author's last name",
-                value="Twain"
             ),
         ]
     ),
@@ -125,15 +122,12 @@ book_search_and_ordering_parameters = [
         examples=[
             OpenApiExample(
                 name='title',
-                value="The Hobbit"
             ),
             OpenApiExample(
                 name="author's first name",
-                value="Virginia"
             ),
             OpenApiExample(
                 name="author's last name",
-                value="Twain"
             ),
         ]
     ),
@@ -231,7 +225,7 @@ put_book_example=[
 patch_book_example=[
     OpenApiExample(
         name='book',
-        description="Update cover of book by id = 1. Make sure to authorize as admin user.",
+        description="Update cover of book by id. Make sure to authorize as admin user.",
         value={
             "cover": "SOFT",
         }
@@ -241,13 +235,12 @@ patch_book_example=[
 book_id_parameter_delete=[
 OpenApiParameter(
         name='id',
-        description='Delete book by id = 40',
+        description='Delete book by id',
         required=True,
         type=int,
         location=OpenApiParameter.PATH,
         examples=[OpenApiExample(
             name='book_id',
-            value=40
         )]
     )
 ]
@@ -255,13 +248,12 @@ OpenApiParameter(
 borrow_id_parameter=[
 OpenApiParameter(
         name='id',
-        description='Get borrowing by id = 1',
+        description='Borrowing by id',
         required=True,
         type=int,
         location=OpenApiParameter.PATH,
         examples=[OpenApiExample(
             name='borrowing_id',
-            value=1
         )]
     )
 ]
@@ -288,7 +280,6 @@ borrowing_filter_parameters=[
         type=int,
         examples=[OpenApiExample(
             name='user_id',
-            value=4
         )]
     )
 ]
@@ -304,27 +295,15 @@ borrowing_post_example=[
     )
 ]
 
-borrowing_return_example=[
-    OpenApiExample(
-        name='borrowing_to_return',
-        description="Return book. Make sure to authorize as admin user or Caleb Adams from readme.md.",
-        value={
-            "expected_return_date": "2025-03-03",
-            "book": 1
-        }
-    )
-]
-
 payment_id_parameter=[
     OpenApiParameter(
         name='id',
-        description='Get payment id by id = 1',
+        description='Get payment id by id',
         required=True,
         type=int,
         location=OpenApiParameter.PATH,
         examples=[OpenApiExample(
             name='payment_id',
-            value=1
         )]
     )
 ]
