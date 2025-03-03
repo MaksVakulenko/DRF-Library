@@ -6,6 +6,7 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from library_service.settings import FINE_MULTIPLIER
 from borrowing.models import Borrowing
 from borrowing.serializers import (
     BorrowingSerializer,
@@ -17,8 +18,6 @@ from notification.signals import notification
 from payment.models import Payment
 import library_service.examples_swagger as swagger
 
-
-MULTIPLIER = 2
 
 class BorrowingViewSet(
     mixins.CreateModelMixin,
@@ -84,7 +83,7 @@ class BorrowingViewSet(
         today = datetime.date.today()
         if today > borrowing.expected_return_date:
             days_expired = (today - borrowing.expected_return_date).days
-            fine = int((borrowing.book.daily_fee * days_expired) * 100) * MULTIPLIER
+            fine = int((borrowing.book.daily_fee * days_expired) * 100) * FINE_MULTIPLIER
             checkout_url = Payment.create_stripe_checkout(
                 request=request,
                 borrowing=borrowing,
