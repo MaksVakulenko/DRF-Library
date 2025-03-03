@@ -402,5 +402,13 @@ email: admin@admin.com
 password: 1234
 ```
 
-Feel free to register as regular user and explore api.
+Feel free to register as regular user and explore api or use one of those credentials.
 
+```
+email: caleb@admans.com
+password: caleb_password
+```
+```
+email: kate@smith.com
+password: kate_password
+```

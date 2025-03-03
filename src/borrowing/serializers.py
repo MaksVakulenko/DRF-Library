@@ -39,6 +39,9 @@ class BorrowingSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         borrowing = super().create(validated_data)
+        # Резервуємо книгу
+        borrowing.book.inventory -= 1
+        borrowing.book.save()
         checkout_url = Payment.create_stripe_checkout(
             request=self.context["request"],
             payment_type=Payment.Type.PAYMENT,
