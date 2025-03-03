@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from borrowing.models import Borrowing
-from src.borrowing.tests.base_setup import BaseSetUpForTest
+from borrowing.tests.base_setup import BaseSetUpForTest
 
 
 class TestBorrowingValidations(TestCase):
