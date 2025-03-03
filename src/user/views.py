@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from drf_spectacular.utils import extend_schema
-from rest_framework import generics, permissions, status
+from rest_framework import generics, status
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -12,6 +12,8 @@ from rest_framework.views import APIView
 
 from user.serializers import UserSerializer
 import library_service.examples_swagger as swagger
+from notification.utils import get_bot_username
+
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -41,7 +43,11 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
         return super().patch(request, *args, **kwargs)
 
 
-class BindTelegram(APIView, LoginRequiredMixin): ...
+class BindTelegram(APIView, LoginRequiredMixin):
+    def get(self, request):
+        bot_username = get_bot_username()
+        link = f"https://telegram.me/{bot_username}?start={str(request.user.pk)}"
+        return Response({"redirect_url": link})
 
 
 class VerifyEmailView(APIView):
