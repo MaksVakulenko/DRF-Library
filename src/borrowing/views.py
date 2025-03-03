@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
@@ -106,7 +106,7 @@ class BorrowingViewSet(
             message=f"✅ Book successfully returned!\n"
                     f"👤 User: {borrowing.user}\n"
                     f"📚 Book: {borrowing.book}\n"
-                    f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                    f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
