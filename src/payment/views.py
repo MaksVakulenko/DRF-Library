@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from borrowing.serializers import BorrowingReturnSerializer
+from notification.signals import notification
 from payment.models import Payment
 from payment.serializers import EmptySerializer, PaymentSerializer
 
@@ -44,6 +45,17 @@ class StripeSuccessAPI(APIView):
                 if payment.type == Payment.Type.PAYMENT:
                     payment.borrowing.book.inventory -= 1
                     payment.borrowing.book.save()
+                    notification.send(
+                        sender=self.__class__,
+                        chat_id=settings.ADMIN_CHAT_ID,
+                        message=(
+                            f"✅ Payment successful!\n"
+                            f"👤 User: {payment.borrowing.user}\n"
+                            f"📚 Book: {payment.borrowing.book}\n"
+                            f"💸 Amount: {payment.amount_of_money} USD\n"
+                            f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                        )
+                    )
                     return Response(
                         {
                             "message": "Payment successful",
