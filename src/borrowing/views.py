@@ -44,15 +44,20 @@ class BorrowingViewSet(
         """
         queryset = self.queryset
 
-        if self.action in ("list", "create"):
-            queryset = queryset.select_related().prefetch_related("book__authors")
+        if self.action == "list":
+            queryset = self.queryset.select_related(
+                'user',  # Select user from the related User model
+                'book'  # Select book from the related Book model
+            ).prefetch_related(
+                'book__authors'  # Prefetch authors related to the book
+            )
 
         if is_active := self.request.query_params.get("is_active"):
             queryset = queryset.filter(actual_return_date__isnull=is_active in ("True", "true", "1"))
 
         if self.request.user.is_staff:
             user_id = self.request.query_params.get("user_id")
-            return queryset.filter(user__id=user_id) if user_id else queryset.select_related().prefetch_related("book__authors")
+            return queryset.filter(user__id=user_id) if user_id else queryset
 
         return queryset.filter(user=self.request.user)
 
