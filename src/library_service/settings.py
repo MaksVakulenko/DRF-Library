@@ -216,7 +216,7 @@ SIMPLE_JWT = {
 }
 
 # Telegram
-ADMIN_CHAT_ID = os.environ.get("chat_id")
+ADMIN_CHAT_ID = os.environ.get("CHAT_ID")
 # Celery
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 
