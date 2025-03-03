@@ -29,7 +29,7 @@ class BindTelegram(APIView, LoginRequiredMixin): ...
 
 class VerifyEmailView(APIView):
     """API view to verify user email via token."""
-
+    permission_classes = (AllowAny,)
     def get(self, request, uidb64, token):
         """Handles email verification when the user clicks the link."""
         try:
