@@ -3,8 +3,11 @@ from datetime import datetime, date
 import stripe
 from django.conf import settings
 from django.db import transaction
-from rest_framework import status
+from drf_spectacular.utils import extend_schema
+from rest_framework import status, mixins, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from borrowing.serializers import BorrowingReturnSerializer
@@ -43,8 +46,6 @@ class StripeSuccessAPI(APIView):
                 payment.mark_as_paid()  # Updates payment and ticket statuses
 
                 if payment.type == Payment.Type.PAYMENT:
-                    payment.borrowing.book.inventory -= 1
-                    payment.borrowing.book.save()
                     notification.send(
                         sender=self.__class__,
                         chat_id=settings.ADMIN_CHAT_ID,
@@ -107,40 +108,68 @@ class StripeCancelAPI(APIView):
             {
                 "message": f"Payment was cancelled. You can try again.",
                 "redirect_url": payment.session_url,
+                "all_payments": reverse("payment:payment-list"),
             }
         )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[
 
 
-class PaymentListView(APIView):
-    """
-    Allows to see all payments fow administrators
-    and list of their own payments for users.
-    """
+class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Payment.objects.all().select_related()
+    serializer_class = PaymentSerializer
 
-    def get(self, request):
+    def get_queryset(self):
         if self.request.user.is_staff:
-            payments = Payment.objects.all()
-        else:
-            payments = Payment.objects.filter(borrowing__user=request.user)
-        serializer = PaymentSerializer(payments, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return self.queryset
+        return self.queryset.filter(borrowing__user=self.request.user)
 
-
-class PaymentDetailView(APIView):
-    """
-    Allows to see details about the payment.
-    """
-
-    def get(self, request, pk):
+    @action(detail=True, methods=["POST"], url_path="renew")
+    @transaction.atomic
+    def renew_payment(self, request, pk=None):
         try:
             payment = Payment.objects.get(pk=pk)
         except Payment.DoesNotExist:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Payment not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        if not request.user.is_staff and payment.borrowing.user != request.user:
-            return Response(
-                {"detail": "You do not have permission to view this payment."},
-                status=status.HTTP_403_FORBIDDEN,
+        if payment.status == Payment.Status.PENDING:
+            return Response({"redirect_url": payment.session_url}, status=status.HTTP_200_OK)
+        elif payment.status == Payment.Status.PAID:
+            return Response({"error": "This payments is already paid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if payment.type != Payment.Type.FINE:
+            return Response({"error": "Cannot create new payment, borrowing does not exist anymore. Please create new borrowing!"}, status=status.HTTP_400_BAD_REQUEST)
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=["card"],
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": "usd",
+                            "product_data": {"name": str(payment.borrowing.book)},
+                            "unit_amount": int(payment.amount_of_money * 100),
+                        },
+                        "quantity": 1,
+                    }
+                ],
+                mode="payment",
+                success_url=(request.build_absolute_uri(reverse("payment:stripe-success"))
+                        + "?session_id={CHECKOUT_SESSION_ID}"),
+                cancel_url = request.build_absolute_uri(reverse("payment:stripe-cancel"))
             )
-        serializer = PaymentSerializer(payment)
-        return Response(serializer.data, status.HTTP_200_OK)
+
+            payment.session_id = session.id
+            payment.session_url = session.url
+            payment.status = Payment.Status.PENDING
+            payment.save()
+            return Response({"redirect_url": session.url}, status=status.HTTP_201_CREATED)
+        except stripe.error.StripeError as e:
+            return Response({"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(summary="Retrieve payment details")
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(summary="List all payments")
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
