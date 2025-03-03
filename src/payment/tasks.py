@@ -16,7 +16,7 @@ def auto_cancel_unpaid_borrowings():
 
     fifteen_minutes_ago = datetime.now(UTC) - timedelta(minutes=15)
     unpaid_borrowings = Borrowing.objects.filter(
-        created_at__lt=fifteen_minutes_ago,
+        borrow_date__lt=fifteen_minutes_ago,
         payments__status=Payment.Status.PENDING
     )
 
