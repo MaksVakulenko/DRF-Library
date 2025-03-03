@@ -1,9 +1,9 @@
-import datetime
+from datetime import datetime, date
 
 import stripe
 from django.conf import settings
 from django.db import transaction
-from rest_framework import status, viewsets, mixins
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -63,7 +63,7 @@ class StripeSuccessAPI(APIView):
                         }
                     )
                 else:
-                    today = datetime.date.today()
+                    today = date.today()
                     serializer = BorrowingReturnSerializer(
                         payment.borrowing,
                         data={"actual_return_date": today},
