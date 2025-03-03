@@ -81,6 +81,12 @@ class BorrowingViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if borrowing.user != self.request.user:
+            return Response(
+                {"user": "You can't return not your borrowing"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         today = datetime.date.today()
         if today > borrowing.expected_return_date:
             days_expired = (today - borrowing.expected_return_date).days
