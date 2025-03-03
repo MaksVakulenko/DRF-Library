@@ -84,7 +84,7 @@ services:
         echo 'Waiting for Django application (server volume)...' &&
         until cd /app/backend; do sleep 1; done &&
         echo 'Starting Celery worker...' &&
-        celery -A library_service worker --loglevel=info --concurrency 4 -E
+        celery -A library_service worker --loglevel=info --concurrency 5 -E
       "
     volumes:
       - ./src:/app/backend
