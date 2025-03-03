@@ -13,4 +13,4 @@ load_dotenv()
 def notify(sender, message: str, chat_id: int = None, **kwargs):
     if kwargs.get("to_admin_chat", None):
         chat_id = os.environ.get("CHAT_ID")
-    send_message(chat_id, message)
+    send_message.delay(chat_id, message)
