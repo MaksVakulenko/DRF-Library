@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from borrowing.serializers import BorrowingReturnSerializer
+from notification.signals import notification
 from payment.models import Payment
 from payment.serializers import EmptySerializer, PaymentSerializer
 import library_service.examples_swagger as swagger
@@ -46,6 +47,17 @@ class StripeSuccessAPI(APIView):
                 if payment.type == Payment.Type.PAYMENT:
                     payment.borrowing.book.inventory -= 1
                     payment.borrowing.book.save()
+                    notification.send(
+                        sender=self.__class__,
+                        chat_id=settings.ADMIN_CHAT_ID,
+                        message=(
+                            f"✅ Payment successful!\n"
+                            f"👤 User: {payment.borrowing.user}\n"
+                            f"📚 Book: {payment.borrowing.book}\n"
+                            f"💸 Amount: {payment.amount_of_money} USD\n"
+                            f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                        )
+                    )
                     return Response(
                         {
                             "message": "Payment successful",
@@ -88,7 +100,17 @@ class StripeCancelAPI(APIView):
     serializer_class = EmptySerializer
 
     def get(self, request):
-        return Response({"message": "Payment was cancelled. You can try again."})
+        user = request.user
+        payment = Payment.objects.get(
+            borrowing__user=user, status=Payment.Status.PENDING
+        )
+
+        return Response(
+            {
+                "message": f"Payment was cancelled. You can try again.",
+                "redirect_url": payment.session_url,
+            }
+        )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[
 
 
 class PaymentListView(APIView):
@@ -96,6 +118,7 @@ class PaymentListView(APIView):
     Allows to see all payments fow administrators
     and list of their own payments for users.
     """
+
     def get(self, request):
         if self.request.user.is_staff:
             payments = Payment.objects.all()
@@ -112,6 +135,7 @@ class PaymentDetailView(APIView):
     @extend_schema(
         parameters=swagger.payment_id_parameter
     )
+
     def get(self, request, pk):
         try:
             payment = Payment.objects.get(pk=pk)
@@ -119,7 +143,9 @@ class PaymentDetailView(APIView):
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if not request.user.is_staff and payment.borrowing.user != request.user:
-            return Response({"detail": "You do not have permission to view this payment."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You do not have permission to view this payment."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = PaymentSerializer(payment)
         return Response(serializer.data, status.HTTP_200_OK)

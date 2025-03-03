@@ -19,13 +19,34 @@ services:
       retries: 5
       start_period: 20s
 
+  redis:
+    container_name: library-redis
+    restart: unless-stopped
+    image: redis:7.2.1
+    ports:
+      - "6379:6379"
+    networks:
+      - library-network
+
   backend:
     container_name: library-backend
     restart: always
     build:
       context: .
       dockerfile: ./docker/backend/Dockerfile
-    entrypoint: ["sh", "/app/docker/backend/server-entrypoint.sh"]
+    command: >
+      sh -c "
+        echo 'Waiting for Django application (server volume)...' &&
+        until cd /app/backend; do sleep 1; done &&
+        echo 'Applying database migrations...' &&
+        until python manage.py makemigrations && python manage.py migrate; do
+          echo 'Waiting for database...'; sleep 2;
+        done &&
+        echo 'Collecting static files...' &&
+        python manage.py collectstatic --noinput &&
+        echo 'Starting Django development server...' &&
+        python manage.py runserver 0.0.0.0:8000
+      "
     working_dir: /app/backend
     env_file:
       - .env
@@ -42,10 +63,63 @@ services:
       - library-network
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:8000/api/health/ || exit 1" ]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
       start_period: 20s
+
+  worker:
+    container_name: library-celery-worker
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    build:
+      context: .
+      dockerfile: ./docker/backend/Dockerfile
+    command: >
+      sh -c "
+        echo 'Waiting for Django application (server volume)...' &&
+        until cd /app/backend; do sleep 1; done &&
+        echo 'Starting Celery worker...' &&
+        celery -A library_service worker --loglevel=info --concurrency 4 -E
+      "
+    volumes:
+      - ./src:/app/backend
+      - library_static_volume:/app/backend/static
+      - library_media_volume:/app/backend/media
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - library-network
+
+  celery-beat:
+    container_name: library-celery-beat
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/backend/Dockerfile
+    command: >
+      sh -c "
+        echo 'Waiting for Django application...' &&
+        until cd /app/backend; do sleep 1; done &&
+        echo 'Starting Celery Beat...' &&
+        celery -A library_service beat --loglevel=info
+      "
+    volumes:
+      - ./src:/app/backend
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - library-network
 
 volumes:
   library_static_volume:

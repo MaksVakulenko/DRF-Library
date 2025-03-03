@@ -1,5 +1,6 @@
-import datetime
+from datetime import datetime
 
+from django.conf import settings
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, mixins, status
@@ -13,11 +14,12 @@ from borrowing.serializers import (
     BorrowingDetailSerializer,
     BorrowingReturnSerializer,
 )
+from notification.signals import notification
 from payment.models import Payment
 import library_service.examples_swagger as swagger
 
-MULTIPLIER = 2
 
+MULTIPLIER = 2
 
 class BorrowingViewSet(
     mixins.CreateModelMixin,
@@ -92,6 +94,14 @@ class BorrowingViewSet(
 
         borrowing.book.inventory += 1
         borrowing.book.save()
+        notification.send(
+            sender=self.__class__,
+            chat_id=settings.ADMIN_CHAT_ID,
+            message=f"✅ Book successfully returned!\n"
+                    f"👤 User: {borrowing.user}\n"
+                    f"📚 Book: {borrowing.book}\n"
+                    f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

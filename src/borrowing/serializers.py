@@ -1,8 +1,12 @@
+import datetime
+
 from django.db import transaction
 from rest_framework import serializers
+from django.conf import settings
 
 from borrowing.models import Borrowing
 from book.serializers import BookDetailBorrowingSerializer
+from notification.signals import notification
 from payment.models import Payment
 
 
@@ -40,6 +44,17 @@ class BorrowingSerializer(serializers.ModelSerializer):
             payment_type=Payment.Type.PAYMENT,
             borrowing=borrowing,
             total_amount=borrowing.total_price(),
+        )
+        notification.send(
+            sender=self.context["request"],
+            chat_id=settings.ADMIN_CHAT_ID,
+            message=(
+                f"✅ New borrowing created!\n"
+                f"👤 User: {self.context['request'].user}\n"
+                f"📚 Book: {validated_data.get('book')}\n"
+                f"⏳ Waiting for payment\n"
+                f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            )
         )
         borrowing.checkout_url = checkout_url
         return borrowing
