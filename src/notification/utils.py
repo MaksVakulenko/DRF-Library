@@ -15,7 +15,6 @@ def send_message(self, chat_id: int, text: str):
         "chat_id": chat_id,
         "text": text
     }
-
     try:
         response = requests.post(API_URL + "sendMessage", params=data)
 
