@@ -13,13 +13,12 @@ from rest_framework.views import APIView
 from user.serializers import UserSerializer
 import library_service.examples_swagger as swagger
 
+
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
 
-    @extend_schema(
-        examples=swagger.registration
-    )
+    @extend_schema(examples=swagger.registration)
     def post(self, request, *args, **kwargs):
         """Register a new user."""
         return super().post(request, *args, **kwargs)
@@ -31,26 +30,25 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-    @extend_schema(
-        examples=swagger.my_profile_put_example
-    )
+    @extend_schema(examples=swagger.my_profile_put_example)
     def put(self, request, *args, **kwargs):
         """Edit your profile"""
-        return self.put(request, *args, **kwargs)
+        return super().put(request, *args, **kwargs)
 
-    @extend_schema(
-        examples=swagger.my_profile_patch_example
-    )
+    @extend_schema(examples=swagger.my_profile_patch_example)
     def patch(self, request, *args, **kwargs):
         """Patch your profile"""
-        return self.patch(request, *args, **kwargs)
+        return super().patch(request, *args, **kwargs)
+
 
 class BindTelegram(APIView, LoginRequiredMixin): ...
 
 
 class VerifyEmailView(APIView):
     """API view to verify user email via token."""
+
     permission_classes = (AllowAny,)
+
     def get(self, request, uidb64, token):
         """Handles email verification when the user clicks the link."""
         try:
@@ -58,16 +56,29 @@ class VerifyEmailView(APIView):
             user = get_object_or_404(get_user_model(), pk=uid)
 
             if user.is_active:
-                return Response({"message": "Email already verified."}, status=status.HTTP_200_OK)
+                return Response(
+                    {"message": "Email already verified."}, status=status.HTTP_200_OK
+                )
 
-            if not default_token_generator.check_token(user, token):  # Validate the token
-                return Response({"error": "Invalid or expired verification token."}, status=status.HTTP_400_BAD_REQUEST)
+            if not default_token_generator.check_token(
+                user, token
+            ):  # Validate the token
+                return Response(
+                    {"error": "Invalid or expired verification token."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # Activate user
             user.is_active = True
             user.save()
 
-            return Response({"message": "Email successfully verified! You can now log in."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Email successfully verified! You can now log in."},
+                status=status.HTTP_200_OK,
+            )
 
         except Exception:
-            return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid verification link."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
