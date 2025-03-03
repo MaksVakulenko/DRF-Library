@@ -104,7 +104,7 @@ class BorrowingViewSet(
         notification.send(
             sender=self.__class__,
             to_admin_chat=True,
-            message=f"✅ Book successfully returned!\n"
+            text=f"✅ Book successfully returned!\n"
                     f"👤 User: {borrowing.user}\n"
                     f"📚 Book: {borrowing.book}\n"
                     f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
