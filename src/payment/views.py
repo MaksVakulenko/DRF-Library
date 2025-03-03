@@ -14,7 +14,6 @@ from borrowing.serializers import BorrowingReturnSerializer
 from notification.signals import notification
 from payment.models import Payment
 from payment.serializers import EmptySerializer, PaymentSerializer
-import library_service.examples_swagger as swagger
 
 
 class StripeSuccessAPI(APIView):
@@ -49,7 +48,7 @@ class StripeSuccessAPI(APIView):
                 if payment.type == Payment.Type.PAYMENT:
                     notification.send(
                         sender=self.__class__,
-                        chat_id=settings.ADMIN_CHAT_ID,
+                        to_admin_chat=True,
                         message=(
                             f"✅ Payment successful!\n"
                             f"👤 User: {payment.borrowing.user}\n"

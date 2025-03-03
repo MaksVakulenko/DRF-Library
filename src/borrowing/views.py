@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from django.conf import settings
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, mixins, status
@@ -104,7 +103,7 @@ class BorrowingViewSet(
         borrowing.book.save()
         notification.send(
             sender=self.__class__,
-            chat_id=settings.ADMIN_CHAT_ID,
+            to_admin_chat=True,
             message=f"✅ Book successfully returned!\n"
                     f"👤 User: {borrowing.user}\n"
                     f"📚 Book: {borrowing.book}\n"

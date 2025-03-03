@@ -50,7 +50,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         )
         notification.send(
             sender=self.context["request"],
-            chat_id=settings.ADMIN_CHAT_ID,
+            to_admin_chat=True,
             message=(
                 f"✅ New borrowing created!\n"
                 f"👤 User: {self.context['request'].user}\n"
