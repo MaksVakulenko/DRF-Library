@@ -199,6 +199,17 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "A REST API for managing library books, borrowings, and payments.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "SECURITY": [
+        { "Bearer Auth": [], }
+    ],
+    "SECURITY_DEFINITIONS": {
+        "Bearer Auth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Authorize",
+            "description": "Enter 'Bearer <JWT token>'",
+        }
+    },
 }
 
 
