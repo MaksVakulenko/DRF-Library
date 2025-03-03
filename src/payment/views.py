@@ -111,7 +111,7 @@ class StripeCancelAPI(APIView):
                 "redirect_url": payment.session_url,
                 "all_payments": reverse("payment:payment-list"),
             }
-        )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[
+        )
 
 
 class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
