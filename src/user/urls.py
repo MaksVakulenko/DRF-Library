@@ -15,6 +15,6 @@ urlpatterns = [
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    path("bind-telegram/<str:code>/", BindTelegram.as_view(), name="bind_telegram"),
+    path("bind-telegram/", BindTelegram.as_view(), name="bind_telegram"),
     path("verify-email/<str:uidb64>/<str:token>/", VerifyEmailView.as_view(), name="verify_email"),
 ]
