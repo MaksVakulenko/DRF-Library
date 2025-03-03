@@ -76,6 +76,7 @@ services:
       dockerfile: ./docker/backend/Dockerfile
     command: >
       sh -c "
+        echo 'Starting telegram bot...' &&
         python run_polling.py
       "
     working_dir: /app/backend
