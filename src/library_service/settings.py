@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "borrowing",
     "user",
     "payment",
+    "notification.apps.NotificationsConfig",
     # third-party apps:
     "rest_framework",
     "debug_toolbar",
@@ -196,3 +197,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
 }
+
+# Telegram
+ADMIN_CHAT_ID = os.environ.get("chat_id")
