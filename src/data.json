@@ -36,27 +36,63 @@
     }
 },
 {
+    "model": "user.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$wQGSdc6DgYGkMr8bw2pA7D$DZSHtjHpSO/psChUNnCTDRVJjbGyEbsYdfKv6mpMHmA=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "Caleb",
+        "last_name": "Adams",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-03-02T18:56:58.392Z",
+        "email": "caleb@admans.com",
+        "chat_id": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "user.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$B3QvzKuS8dXL17Cvku0UiY$EquEd9rl7rqIqlDuv+a+HJnzexHAI1Z45eLFCQKA82w=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "Kate",
+        "last_name": "Smith",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-03-02T18:58:09.329Z",
+        "email": "kate@smith.com",
+        "chat_id": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
     "model": "book.author",
     "pk": 1,
     "fields": {
         "first_name": "William",
-        "last_name": "Shakespeare "
+        "last_name": "Shakespeare"
     }
 },
 {
     "model": "book.author",
     "pk": 2,
     "fields": {
-        "first_name": "Jane ",
-        "last_name": "Austen "
+        "first_name": "Jane",
+        "last_name": "Austen"
     }
 },
 {
     "model": "book.author",
     "pk": 3,
     "fields": {
-        "first_name": "George ",
-        "last_name": "Orwell "
+        "first_name": "George",
+        "last_name": "Orwell"
     }
 },
 {
@@ -64,31 +100,31 @@
     "pk": 4,
     "fields": {
         "first_name": "J.K.",
-        "last_name": "Rowling "
+        "last_name": "Rowling"
     }
 },
 {
     "model": "book.author",
     "pk": 5,
     "fields": {
-        "first_name": "Mark ",
-        "last_name": "Twain "
+        "first_name": "Mark",
+        "last_name": "Twain"
     }
 },
 {
     "model": "book.author",
     "pk": 6,
     "fields": {
-        "first_name": "Charles ",
-        "last_name": "Dickens "
+        "first_name": "Charles",
+        "last_name": "Dickens"
     }
 },
 {
     "model": "book.author",
     "pk": 7,
     "fields": {
-        "first_name": "Ernest ",
-        "last_name": "Hemingway "
+        "first_name": "Ernest",
+        "last_name": "Hemingway"
     }
 },
 {
@@ -96,63 +132,143 @@
     "pk": 8,
     "fields": {
         "first_name": "F. Scott",
-        "last_name": "Fitzgerald "
+        "last_name": "Fitzgerald"
     }
 },
 {
     "model": "book.author",
     "pk": 9,
     "fields": {
-        "first_name": "J.R.R. ",
-        "last_name": "Tolkien "
+        "first_name": "J.R.R.",
+        "last_name": "Tolkien"
     }
 },
 {
     "model": "book.author",
     "pk": 10,
     "fields": {
-        "first_name": "Agatha ",
-        "last_name": "Christie "
+        "first_name": "Agatha",
+        "last_name": "Christie"
     }
 },
 {
     "model": "book.author",
     "pk": 11,
     "fields": {
-        "first_name": "Stephen ",
-        "last_name": "King "
+        "first_name": "Stephen",
+        "last_name": "King"
     }
 },
 {
     "model": "book.author",
     "pk": 12,
     "fields": {
-        "first_name": "Virginia ",
-        "last_name": "Woolf "
+        "first_name": "Virginia",
+        "last_name": "Woolf"
     }
 },
 {
     "model": "book.author",
     "pk": 13,
     "fields": {
-        "first_name": "Franz ",
-        "last_name": "Kafka "
+        "first_name": "Franz",
+        "last_name": "Kafka"
     }
 },
 {
     "model": "book.author",
     "pk": 14,
     "fields": {
-        "first_name": "Herman ",
-        "last_name": "Melville "
+        "first_name": "Herman",
+        "last_name": "Melville"
     }
 },
 {
     "model": "book.author",
     "pk": 15,
     "fields": {
-        "first_name": "Oscar ",
-        "last_name": "Wilde "
+        "first_name": "Oscar",
+        "last_name": "Wilde"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 16,
+    "fields": {
+        "first_name": "Harper",
+        "last_name": "Lee"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 17,
+    "fields": {
+        "first_name": "Emily",
+        "last_name": "Bronte"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 18,
+    "fields": {
+        "first_name": "Charlotte",
+        "last_name": "Bronte"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 19,
+    "fields": {
+        "first_name": "Mary",
+        "last_name": "Shelley"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 20,
+    "fields": {
+        "first_name": "Bram",
+        "last_name": "Stoker"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 21,
+    "fields": {
+        "first_name": "H.G.",
+        "last_name": "Wells"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 22,
+    "fields": {
+        "first_name": "C.S.",
+        "last_name": "Lewis"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 23,
+    "fields": {
+        "first_name": "Aldous",
+        "last_name": "Huxley"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 24,
+    "fields": {
+        "first_name": "Edgar Allan",
+        "last_name": "Poe"
+    }
+},
+{
+    "model": "book.author",
+    "pk": 25,
+    "fields": {
+        "first_name": "Margaret",
+        "last_name": "Atwood"
     }
 },
 {
@@ -387,6 +503,406 @@
         "authors": [
             15
         ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 19,
+    "fields": {
+        "title": "To Kill a Mockingbird",
+        "cover": "HARD",
+        "inventory": 7,
+        "daily_fee": "7.00",
+        "authors": [
+            16
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 20,
+    "fields": {
+        "title": "Wuthering Heights",
+        "cover": "SOFT",
+        "inventory": 10,
+        "daily_fee": "8.00",
+        "authors": [
+            17
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 21,
+    "fields": {
+        "title": "Jane Eyre",
+        "cover": "SOFT",
+        "inventory": 4,
+        "daily_fee": "5.50",
+        "authors": [
+            18
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 22,
+    "fields": {
+        "title": "Frankenstein",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            19
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 23,
+    "fields": {
+        "title": "Dracula",
+        "cover": "HARD",
+        "inventory": 8,
+        "daily_fee": "9.00",
+        "authors": [
+            20
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 24,
+    "fields": {
+        "title": "The War of the Worlds",
+        "cover": "SOFT",
+        "inventory": 5,
+        "daily_fee": "4.00",
+        "authors": [
+            21
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 25,
+    "fields": {
+        "title": "The Time Machine",
+        "cover": "SOFT",
+        "inventory": 5,
+        "daily_fee": "6.00",
+        "authors": [
+            21
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 26,
+    "fields": {
+        "title": "The Chronicles of Narnia",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "4.00",
+        "authors": [
+            22
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 27,
+    "fields": {
+        "title": "Brave New World",
+        "cover": "SOFT",
+        "inventory": 6,
+        "daily_fee": "3.00",
+        "authors": [
+            23
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 28,
+    "fields": {
+        "title": "The Raven",
+        "cover": "HARD",
+        "inventory": 3,
+        "daily_fee": "10.00",
+        "authors": [
+            24
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 29,
+    "fields": {
+        "title": "The Tell-Tale Heart",
+        "cover": "HARD",
+        "inventory": 2,
+        "daily_fee": "15.00",
+        "authors": [
+            24
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 30,
+    "fields": {
+        "title": "The Handmaid's Tale",
+        "cover": "SOFT",
+        "inventory": 6,
+        "daily_fee": "7.00",
+        "authors": [
+            25
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 31,
+    "fields": {
+        "title": "Harry Potter and the Sorcerer's Stone",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 32,
+    "fields": {
+        "title": "Harry Potter and the Chamber of Secrets",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 33,
+    "fields": {
+        "title": "Harry Potter and the Prisoner of Azkaban",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 34,
+    "fields": {
+        "title": "Harry Potter and the Goblet of Fire",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 35,
+    "fields": {
+        "title": "Harry Potter and the Order of the Phoenix",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 36,
+    "fields": {
+        "title": "Harry Potter and the Half-Blood Prince",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 37,
+    "fields": {
+        "title": "Harry Potter and the Deathly Hallows",
+        "cover": "HARD",
+        "inventory": 10,
+        "daily_fee": "10.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 38,
+    "fields": {
+        "title": "Fantastic Beasts and Where to Find Them",
+        "cover": "HARD",
+        "inventory": 5,
+        "daily_fee": "7.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 39,
+    "fields": {
+        "title": "Quidditch Through the Ages",
+        "cover": "HARD",
+        "inventory": 3,
+        "daily_fee": "6.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "book.book",
+    "pk": 40,
+    "fields": {
+        "title": "The Tales of Beedle the Bard",
+        "cover": "HARD",
+        "inventory": 3,
+        "daily_fee": "6.00",
+        "authors": [
+            4
+        ]
+    }
+},
+{
+    "model": "borrowing.borrowing",
+    "pk": 1,
+    "fields": {
+        "borrow_date": "2025-03-02",
+        "expected_return_date": "2025-03-03",
+        "book": 1,
+        "user": 4
+    }
+},
+{
+    "model": "borrowing.borrowing",
+    "pk": 2,
+    "fields": {
+        "borrow_date": "2025-03-02",
+        "expected_return_date": "2025-03-05",
+        "actual_return_date": "2025-03-02",
+        "book": 9,
+        "user": 4
+    }
+},
+{
+    "model": "borrowing.borrowing",
+    "pk": 3,
+    "fields": {
+        "borrow_date": "2025-03-02",
+        "expected_return_date": "2025-03-06",
+        "actual_return_date": "2025-03-02",
+        "book": 18,
+        "user": 5
+    }
+},
+{
+    "model": "borrowing.borrowing",
+    "pk": 4,
+    "fields": {
+        "borrow_date": "2025-03-02",
+        "expected_return_date": "2025-03-16",
+        "actual_return_date": "2025-03-02",
+        "book": 13,
+        "user": 5
+    }
+},
+{
+    "model": "borrowing.borrowing",
+    "pk": 5,
+    "fields": {
+        "borrow_date": "2025-03-02",
+        "expected_return_date": "2025-03-03",
+        "actual_return_date": "2025-03-02",
+        "book": 3,
+        "user": 5
+    }
+},
+{
+    "model": "payment.payment",
+    "pk": 1,
+    "fields": {
+        "borrowing": 1,
+        "session_url": "https://checkout.stripe.com/c/pay/cs_test_a1W7ZCGsmzEsDyZ0IUa5lzp02IVjZ5P5XEQ6JyKzKzIQWWYcxsHRzDlEjm#fidkdWxOYHwnPyd1blpxYHZxWjA0VHNtRjRDalJWVjwzfEpDf2t3fWNSV0sxQGNqQ2J2MTNSUDFVX2Zoc0JtPXNqd2tPM2lyfGRzNWNEQjY2S1FPUXZJbX1ISjJjQTA2X1xgd3FiX0hRZzRNNTVfN29gNGNgUycpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl",
+        "session_id": "cs_test_a1W7ZCGsmzEsDyZ0IUa5lzp02IVjZ5P5XEQ6JyKzKzIQWWYcxsHRzDlEjm",
+        "amount_of_money": "1500.00",
+        "status": 1,
+        "type": 1
+    }
+},
+{
+    "model": "payment.payment",
+    "pk": 2,
+    "fields": {
+        "borrowing": 2,
+        "session_url": "https://checkout.stripe.com/c/pay/cs_test_a1z0pV5ywyilCIYCCBiRRnEvK76QhGR3EcGQzmlwCyyO5mKex7ox9fCPjx#fidkdWxOYHwnPyd1blpxYHZxWjA0VHNtRjRDalJWVjwzfEpDf2t3fWNSV0sxQGNqQ2J2MTNSUDFVX2Zoc0JtPXNqd2tPM2lyfGRzNWNEQjY2S1FPUXZJbX1ISjJjQTA2X1xgd3FiX0hRZzRNNTVfN29gNGNgUycpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl",
+        "session_id": "cs_test_a1z0pV5ywyilCIYCCBiRRnEvK76QhGR3EcGQzmlwCyyO5mKex7ox9fCPjx",
+        "amount_of_money": "2100.00",
+        "status": 1,
+        "type": 1
+    }
+},
+{
+    "model": "payment.payment",
+    "pk": 3,
+    "fields": {
+        "borrowing": 3,
+        "session_url": "https://checkout.stripe.com/c/pay/cs_test_a1D5ez8sUTOaa19mSfDA5gM0iAHPI4sshslJ8Gk7f82vo1SOD4b70bVlAC#fidkdWxOYHwnPyd1blpxYHZxWjA0VHNtRjRDalJWVjwzfEpDf2t3fWNSV0sxQGNqQ2J2MTNSUDFVX2Zoc0JtPXNqd2tPM2lyfGRzNWNEQjY2S1FPUXZJbX1ISjJjQTA2X1xgd3FiX0hRZzRNNTVfN29gNGNgUycpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl",
+        "session_id": "cs_test_a1D5ez8sUTOaa19mSfDA5gM0iAHPI4sshslJ8Gk7f82vo1SOD4b70bVlAC",
+        "amount_of_money": "3600.00",
+        "status": 1,
+        "type": 1
+    }
+},
+{
+    "model": "payment.payment",
+    "pk": 4,
+    "fields": {
+        "borrowing": 4,
+        "session_url": "https://checkout.stripe.com/c/pay/cs_test_a1qNsmuICS5V9qINFeFRjquHNVWGba00j6LC4FiSsiCuId9HwU4sEkxCV4#fidkdWxOYHwnPyd1blpxYHZxWjA0VHNtRjRDalJWVjwzfEpDf2t3fWNSV0sxQGNqQ2J2MTNSUDFVX2Zoc0JtPXNqd2tPM2lyfGRzNWNEQjY2S1FPUXZJbX1ISjJjQTA2X1xgd3FiX0hRZzRNNTVfN29gNGNgUycpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl",
+        "session_id": "cs_test_a1qNsmuICS5V9qINFeFRjquHNVWGba00j6LC4FiSsiCuId9HwU4sEkxCV4",
+        "amount_of_money": "4200.00",
+        "status": 1,
+        "type": 1
+    }
+},
+{
+    "model": "payment.payment",
+    "pk": 5,
+    "fields": {
+        "borrowing": 5,
+        "session_url": "https://checkout.stripe.com/c/pay/cs_test_a1qfyRiqWU5IQgo6KLss9zJ3NBOmDfUMFCEo3U0mR7eQk4GJ3XIqjTO6HL#fidkdWxOYHwnPyd1blpxYHZxWjA0VHNtRjRDalJWVjwzfEpDf2t3fWNSV0sxQGNqQ2J2MTNSUDFVX2Zoc0JtPXNqd2tPM2lyfGRzNWNEQjY2S1FPUXZJbX1ISjJjQTA2X1xgd3FiX0hRZzRNNTVfN29gNGNgUycpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl",
+        "session_id": "cs_test_a1qfyRiqWU5IQgo6KLss9zJ3NBOmDfUMFCEo3U0mR7eQk4GJ3XIqjTO6HL",
+        "amount_of_money": "300.00",
+        "status": 1,
+        "type": 1
     }
 }
 ]

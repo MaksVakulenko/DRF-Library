@@ -1,8 +1,9 @@
-import datetime
+from datetime import datetime, date
 
 import stripe
 from django.conf import settings
 from django.db import transaction
+from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +12,7 @@ from borrowing.serializers import BorrowingReturnSerializer
 from notification.signals import notification
 from payment.models import Payment
 from payment.serializers import EmptySerializer, PaymentSerializer
+import library_service.examples_swagger as swagger
 
 
 class StripeSuccessAPI(APIView):
@@ -63,7 +65,7 @@ class StripeSuccessAPI(APIView):
                         }
                     )
                 else:
-                    today = datetime.date.today()
+                    today = date.today()
                     serializer = BorrowingReturnSerializer(
                         payment.borrowing,
                         data={"actual_return_date": today},
@@ -130,6 +132,9 @@ class PaymentDetailView(APIView):
     """
     Allows to see details about the payment.
     """
+    @extend_schema(
+        parameters=swagger.payment_id_parameter
+    )
 
     def get(self, request, pk):
         try:
