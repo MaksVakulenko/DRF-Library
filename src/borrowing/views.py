@@ -1,8 +1,7 @@
 import datetime
 
 from django.db import transaction
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,6 +14,7 @@ from borrowing.serializers import (
     BorrowingReturnSerializer,
 )
 from payment.models import Payment
+import library_service.examples_swagger as swagger
 
 MULTIPLIER = 2
 
@@ -42,17 +42,22 @@ class BorrowingViewSet(
         """
         queryset = self.queryset
         if is_active := self.request.query_params.get("is_active"):
-            queryset = queryset.filter(actual_return_date__isnull=True) if is_active in ("True", "true", "1") \
+            queryset = queryset.filter(actual_return_date__isnull=True)\
+                if is_active in ("True", "true", "1") \
                 else queryset.filter(actual_return_date__isnull=False)
         # Filtering for admins
         if self.request.user.is_staff:
             user_id = self.request.query_params.get("user_id")
-            return queryset.filter(user__id=user_id) if user_id else queryset
+            return queryset.filter(user__id=user_id) if user_id else queryset.all()
         return queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @extend_schema(
+        parameters=swagger.borrow_id_parameter,
+        examples=swagger.borrowing_return_example
+    )
     @action(
         methods=["POST"],
         detail=True,
@@ -90,6 +95,9 @@ class BorrowingViewSet(
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        examples=swagger.borrowing_post_example
+    )
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         """
@@ -107,21 +115,15 @@ class BorrowingViewSet(
         )
 
     @extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name="is_active",
-                description="Filter borrowings by status of borrowing.",
-                required=False,
-                type=OpenApiTypes.STR,
-            ),
-            OpenApiParameter(
-                name="user_id",
-                description="Filter borrowings by user id (available only for admin users)",
-                required=False,
-                type=OpenApiTypes.INT,
-            )
-        ]
+        parameters=swagger.borrowing_filter_parameters
     )
     def list(self, request, *args, **kwargs):
         """List of borrowings."""
         return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        parameters=swagger.borrow_id_parameter
+    )
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve a borrowing."""
+        return super().retrieve(request, *args, **kwargs)
