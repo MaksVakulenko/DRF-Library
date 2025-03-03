@@ -14,7 +14,7 @@ from payment.models import Payment
 def auto_cancel_unpaid_borrowings():
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
-    fifteen_minutes_ago = datetime.now(UTC) - timedelta(minutes=15)
+    fifteen_minutes_ago = datetime.now(UTC) - timedelta(minutes=2)
     unpaid_borrowings = Borrowing.objects.filter(
         borrow_date__lt=fifteen_minutes_ago,
         payments__status=Payment.Status.PENDING
