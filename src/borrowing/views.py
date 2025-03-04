@@ -1,12 +1,12 @@
-from datetime import datetime
+import datetime
 
-from django.conf import settings
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from library_service.settings import FINE_MULTIPLIER
 from borrowing.models import Borrowing
 from borrowing.serializers import (
     BorrowingSerializer,
@@ -18,8 +18,6 @@ from notification.signals import notification
 from payment.models import Payment
 import library_service.examples_swagger as swagger
 
-
-MULTIPLIER = 2
 
 class BorrowingViewSet(
     mixins.CreateModelMixin,
@@ -82,10 +80,16 @@ class BorrowingViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if borrowing.user != self.request.user:
+            return Response(
+                {"user": "You can't return not your borrowing"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         today = datetime.date.today()
         if today > borrowing.expected_return_date:
             days_expired = (today - borrowing.expected_return_date).days
-            fine = int((borrowing.book.daily_fee * days_expired) * 100) * MULTIPLIER
+            fine = int((borrowing.book.daily_fee * days_expired) * 100) * FINE_MULTIPLIER
             checkout_url = Payment.create_stripe_checkout(
                 request=request,
                 borrowing=borrowing,
@@ -104,11 +108,11 @@ class BorrowingViewSet(
         borrowing.book.save()
         notification.send(
             sender=self.__class__,
-            chat_id=settings.ADMIN_CHAT_ID,
+            to_admin_chat=True,
             message=f"✅ Book successfully returned!\n"
                     f"👤 User: {borrowing.user}\n"
                     f"📚 Book: {borrowing.book}\n"
-                    f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                    f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -8,6 +8,7 @@ from borrowing.models import Borrowing
 from book.serializers import BookDetailBorrowingSerializer
 from notification.signals import notification
 from payment.models import Payment
+from library_service.settings import FINE_MULTIPLIER
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -30,12 +31,6 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
         return data
 
-    # def create(self, validated_data):
-    #     book = validated_data["book"]
-    #     book.inventory -= 1
-    #     book.save()
-    #     return super().create(validated_data)
-
     @transaction.atomic
     def create(self, validated_data):
         borrowing = super().create(validated_data)
@@ -50,7 +45,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         )
         notification.send(
             sender=self.context["request"],
-            chat_id=settings.ADMIN_CHAT_ID,
+            to_admin_chat=True,
             message=(
                 f"✅ New borrowing created!\n"
                 f"👤 User: {self.context['request'].user}\n"
@@ -67,21 +62,41 @@ class BorrowingListSerializer(serializers.ModelSerializer):
     is_active = serializers.SerializerMethodField()
     book = serializers.StringRelatedField()
     payments = serializers.StringRelatedField(many=True)
+    fine = serializers.SerializerMethodField()
+    user = serializers.EmailField(source="user.email")
 
     class Meta:
         model = Borrowing
         fields = (
             "id",
             "borrow_date",
+            "user",
             "expected_return_date",
             "actual_return_date",
             "book",
             "is_active",
+            "fine",
             "payments",
         )
 
     def get_is_active(self, obj):
         return obj.actual_return_date is None
+
+    def get_fine(self, obj):
+        today = datetime.date.today()
+        if self.get_is_active(obj) and today > obj.expected_return_date:
+            days_expired = (today - obj.expected_return_date).days
+            return int(
+                (obj.book.daily_fee * days_expired) * 100
+            ) * FINE_MULTIPLIER
+        return None
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        today = datetime.date.today()
+        if not (self.get_is_active(instance) and today > instance.expected_return_date):
+            data.pop("fine", None)
+        return data
 
 
 class BorrowingDetailSerializer(BorrowingListSerializer):
