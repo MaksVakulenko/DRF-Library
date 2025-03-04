@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now
 
 from book.models import Book
 from payment.models import Payment
@@ -11,6 +12,7 @@ from payment.models import Payment
 class Borrowing(models.Model):
     """A model for borrowing"""
 
+    created_at = models.DateTimeField(auto_now_add=True)
     borrow_date = models.DateField(auto_now_add=True)
     expected_return_date = models.DateField()
     actual_return_date = models.DateField(null=True, blank=True)
