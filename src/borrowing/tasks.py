@@ -4,7 +4,6 @@ from celery import shared_task
 
 from borrowing.models import Borrowing
 from notification.signals import notification
-from notification.utils import send_message
 from user.tasks import send_verification_email_task
 
 
@@ -31,18 +30,23 @@ def check_overdue_borrowings():
             f"📅 Expected return: {borrowing.expected_return_date.strftime('%B %d, %Y')}"
         )
         notification.send(sender=None, message=admin_message, to_admin_chat=True)
+        today = datetime.now().date()
+        days_expired = (today - borrowing.expected_return_date).days
+        fine = int((borrowing.book.daily_fee * days_expired) * 100) * 2
 
         email_message = (
             f"Hello, {borrowing.user.first_name}!\n\n"
             f"We noticed that the book \"{borrowing.book.title}\" you borrowed on "
             f"{borrowing.borrow_date.strftime('%B %d, %Y')} was due for return on "
             f"{borrowing.expected_return_date.strftime('%B %d, %Y')}.\n\n"
-            "As of today, it is overdue. Please return the book as soon as possible to avoid further penalties.\n\n"
+            f"As of today, it is overdue by {days_expired} day(s). Please return the book as soon as possible to avoid further penalties.\n\n"
+            f"A fine of ${fine / 100:.2f} has been applied to your account.\n\n"
             "If you have any questions, feel free to reach out.\n\n"
             "Thank you for your cooperation!\n\n"
             "Best regards,\n"
             "Your Library Team 📚"
         )
+
         send_verification_email_task.delay(
             subject="Overdue borrowing",
             message=email_message,
