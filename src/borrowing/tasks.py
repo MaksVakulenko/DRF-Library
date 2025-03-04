@@ -3,6 +3,7 @@ from datetime import datetime
 from celery import shared_task
 
 from borrowing.models import Borrowing
+from library_service.settings import FRONTEND_URL
 from notification.signals import notification
 from user.tasks import send_verification_email_task
 
@@ -41,6 +42,8 @@ def check_overdue_borrowings():
             f"{borrowing.expected_return_date.strftime('%B %d, %Y')}.\n\n"
             f"As of today, it is overdue by {days_expired} day(s). Please return the book as soon as possible to avoid further penalties.\n\n"
             f"A fine of ${fine / 100:.2f} has been applied to your account.\n\n"
+            f"Use provided link to pay it:"
+            f"{FRONTEND_URL}/api/borrowings/{borrowing.id}/return/"
             "If you have any questions, feel free to reach out.\n\n"
             "Thank you for your cooperation!\n\n"
             "Best regards,\n"
