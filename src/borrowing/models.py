@@ -66,6 +66,7 @@ class Borrowing(models.Model):
             Borrowing.validate_if_user_has_expired_borrowing(self.user_id)
             Borrowing.validate_expected_return_date(self.expected_return_date)
             Borrowing.validate_if_user_has_pending_payment(self.user_id)
+            Borrowing.validate_book_inventory(self.book)
 
     def save(self, *args, **kwargs):
         self.full_clean()
