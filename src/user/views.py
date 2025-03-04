@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from payment.serializers import EmptySerializer
 from user.serializers import UserSerializer
 import library_service.examples_swagger as swagger
 from notification.utils import get_bot_username
@@ -44,6 +45,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 
 
 class BindTelegram(APIView, LoginRequiredMixin):
+    serializer_class = EmptySerializer
     def get(self, request):
         bot_username = get_bot_username()
         link = f"https://telegram.me/{bot_username}?start={str(request.user.pk)}"
@@ -52,7 +54,7 @@ class BindTelegram(APIView, LoginRequiredMixin):
 
 class VerifyEmailView(APIView):
     """API view to verify user email via token."""
-
+    serializer_class = EmptySerializer
     permission_classes = (AllowAny,)
 
     def get(self, request, uidb64, token):
