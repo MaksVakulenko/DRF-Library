@@ -39,7 +39,7 @@ services:
         echo 'Waiting for Django application (server volume)...' &&
         until cd /app/backend; do sleep 1; done &&
         echo 'Applying database migrations...' &&
-        until python manage.py makemigrations && python manage.py migrate; do
+        until python manage.py makemigrations && python manage.py migrate && python manage.py seed_db; do
           echo 'Waiting for database...'; sleep 2;
         done &&
         echo 'Collecting static files...' &&
