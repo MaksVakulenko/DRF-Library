@@ -6,6 +6,7 @@ from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
@@ -20,7 +21,7 @@ class StripeSuccessAPI(APIView):
     """
     Verifies successful payment using session_id.
     """
-
+    permission_classes = (AllowAny,)
     serializer_class = EmptySerializer
 
     @transaction.atomic
@@ -103,14 +104,18 @@ class StripeCancelAPI(APIView):
         payment = Payment.objects.get(
             borrowing__user=user, status=Payment.Status.PENDING
         )
+        cancel_url = request.build_absolute_uri(
+            reverse("payment:payment-cancel", kwargs={"pk": payment.id})
+        )
 
         return Response(
             {
-                "message": f"Payment was cancelled. You can try again.",
+                "message": "Payment wasn't successful. You can try again.",
                 "redirect_url": payment.session_url,
-                "all_payments": reverse("payment:payment-list"),
+                "another_message": "Or cancel this payment:",
+                "cancel_url": cancel_url
             }
-        )  # TODO краще зробити просто редірект на сторінку з усіма його платежами і хай він сам обирає.[[[[[[[[[[[[[
+        )
 
 
 class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -136,7 +141,7 @@ class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
             return Response({"error": "This payments is already paid"}, status=status.HTTP_400_BAD_REQUEST)
 
         if payment.type != Payment.Type.FINE:
-            return Response({"error": "Cannot create new payment, borrowing does not exist anymore. Please create new borrowing!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Cannot create new payment, borrowing does not exist anymore as payment expired. Please create new borrowing!"}, status=status.HTTP_400_BAD_REQUEST)
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
         try:
@@ -173,3 +178,33 @@ class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
     @extend_schema(summary="List all payments")
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class CancelPaymentAPIView(APIView):
+    """
+    A separate view for canceling a pending payment.
+    """
+    serializer_class = EmptySerializer
+
+    def get(self, request, pk):
+        try:
+            payment = Payment.objects.get(pk=pk)
+        except Payment.DoesNotExist:
+            return Response({"error": "Payment not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if payment.status != Payment.Status.PENDING:
+            return Response({"error": "Only pending payments can be canceled."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+
+        try:
+            stripe.checkout.Session.expire(payment.session_id)
+        except stripe.error.StripeError as e:
+            return Response({"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        payment.status = Payment.Status.EXPIRED
+        payment.save()
+
+        return Response({"message": f"Payment {payment.id} has been successfully canceled."},
+                        status=status.HTTP_200_OK)
