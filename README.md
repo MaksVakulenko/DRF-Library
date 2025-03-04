@@ -549,23 +549,4 @@ ex:
 
 - **If using setup DB + Django from Docker**: Set `POSTGRES_HOST=library-postgres` (the container name).
 - **If running Django locally and DB in docker**: Set `POSTGRES_HOST=localhost`.
-```ini
-# Django:
-SECRET_KEY=_eSHIGrn*@OSo!H1hDISxl4hH8wj90La
 
-# Stripe:
-STRIPE_SECRET_KEY='your_secret_key'
-STRIPE_PUBLISHABLE_KEY='your_publishable_key'
-
-# Database selection:
-# Please specify which database you would like to use and comment out the other option:
-#DJANGO_DB=sqlite
-DJANGO_DB=postgresql
-
-# PostgreSQL (for Docker deployment):
-POSTGRES_HOST=library-postgres      # This is the container name for the PostgreSQL service
-POSTGRES_DB=library_db                # Database name
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=some_password
-POSTGRES_DB_PORT=5432
-```

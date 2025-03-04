@@ -295,6 +295,13 @@ borrowing_post_example=[
     )
 ]
 
+borrowing_return_example=[
+    OpenApiExample(
+        name='borrowing_to_return',
+        description="Return book. Make sure to authorize as admin user or Caleb Adams from readme.md.",
+        value={}
+    )
+]
 payment_id_parameter=[
     OpenApiParameter(
         name='id',
