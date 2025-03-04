@@ -27,9 +27,9 @@ def auto_cancel_unpaid_borrowings():
             payment.status = Payment.Status.EXPIRED
             payment.save()
 
-            # Повертаємо книгу з резерву
+            # Return the book to inventory
             borrowing.book.inventory += 1
             borrowing.book.save()
 
-        # Видаляємо позику
-        borrowing.delete()
+            # Delete the borrowing record
+            borrowing.delete()
