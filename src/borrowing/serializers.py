@@ -86,9 +86,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
         today = datetime.date.today()
         if self.get_is_active(obj) and today > obj.expected_return_date:
             days_expired = (today - obj.expected_return_date).days
-            return int(
-                (obj.book.daily_fee * days_expired) * 100
-            ) * FINE_MULTIPLIER
+            return int((obj.book.daily_fee * days_expired) * FINE_MULTIPLIER)
         return None
 
     def to_representation(self, instance):
