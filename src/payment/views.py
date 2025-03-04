@@ -46,18 +46,19 @@ class StripeSuccessAPI(APIView):
 
                 payment.mark_as_paid()  # Updates payment and ticket statuses
 
-                if payment.type == Payment.Type.PAYMENT:
-                    notification.send(
-                        sender=self.__class__,
-                        to_admin_chat=True,
-                        message=(
-                            f"✅ Payment successful!\n"
-                            f"👤 User: {payment.borrowing.user}\n"
-                            f"📚 Book: {payment.borrowing.book}\n"
-                            f"💸 Amount: {payment.amount_of_money} USD\n"
-                            f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-                        )
+                notification.send(
+                    sender=self.__class__,
+                    to_admin_chat=True,
+                    message=(
+                        f"✅ Payment successful!\n"
+                        f"👤 User: {payment.borrowing.user}\n"
+                        f"📚 Book: {payment.borrowing.book}\n"
+                        f"💸 Amount: {payment.amount_of_money // 100} USD\n"
+                        f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
                     )
+                )
+
+                if payment.type == Payment.Type.PAYMENT:
                     return Response(
                         {
                             "message": "Payment successful",
@@ -75,6 +76,14 @@ class StripeSuccessAPI(APIView):
                     serializer.save()
                     payment.borrowing.book.inventory += 1
                     payment.borrowing.book.save()
+                    notification.send(
+                        sender=self.__class__,
+                        to_admin_chat=True,
+                        message=f"✅ Book successfully returned!\n"
+                                f"👤 User: {payment.borrowing.user}\n"
+                                f"📚 Book: {payment.borrowing.book}\n"
+                                f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                    )
                     return Response(
                         {
                             "message": f"Fine payment for borrowing {payment.borrowing.id} successful",
