@@ -9,6 +9,7 @@ from book.serializers import BookDetailBorrowingSerializer
 from notification.signals import notification
 from payment.models import Payment
 from library_service.settings import FINE_MULTIPLIER
+from library_service.messages import get_message_borrowing_created
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -46,13 +47,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         notification.send(
             sender=self.context["request"],
             to_admin_chat=True,
-            message=(
-                f"✅ New borrowing created!\n"
-                f"👤 User: {self.context['request'].user}\n"
-                f"📚 Book: {validated_data.get('book')}\n"
-                f"⏳ Waiting for payment\n"
-                f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
-            )
+            message=get_message_borrowing_created(self, validated_data)
         )
         borrowing.checkout_url = checkout_url
         return borrowing
