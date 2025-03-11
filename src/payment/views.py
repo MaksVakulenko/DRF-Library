@@ -12,9 +12,11 @@ from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from borrowing.serializers import BorrowingReturnSerializer
+from library_service.settings import FINE_MULTIPLIER
 from notification.signals import notification
 from payment.models import Payment
 from payment.serializers import EmptySerializer, PaymentSerializer
+from library_service.messages import get_message_payment_successful, get_message_book_returned
 
 
 class StripeSuccessAPI(APIView):
@@ -46,18 +48,13 @@ class StripeSuccessAPI(APIView):
 
                 payment.mark_as_paid()  # Updates payment and ticket statuses
 
+                notification.send(
+                    sender=self.__class__,
+                    to_admin_chat=True,
+                    message=get_message_payment_successful(payment)
+                )
+
                 if payment.type == Payment.Type.PAYMENT:
-                    notification.send(
-                        sender=self.__class__,
-                        to_admin_chat=True,
-                        message=(
-                            f"✅ Payment successful!\n"
-                            f"👤 User: {payment.borrowing.user}\n"
-                            f"📚 Book: {payment.borrowing.book}\n"
-                            f"💸 Amount: {payment.amount_of_money} USD\n"
-                            f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-                        )
-                    )
                     return Response(
                         {
                             "message": "Payment successful",
@@ -75,6 +72,11 @@ class StripeSuccessAPI(APIView):
                     serializer.save()
                     payment.borrowing.book.inventory += 1
                     payment.borrowing.book.save()
+                    notification.send(
+                        sender=self.__class__,
+                        to_admin_chat=True,
+                        message=get_message_book_returned(payment.borrowing)
+                    )
                     return Response(
                         {
                             "message": f"Fine payment for borrowing {payment.borrowing.id} successful",
@@ -144,6 +146,9 @@ class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
             return Response({"error": "Cannot create new payment, borrowing does not exist anymore as payment expired. Please create new borrowing!"}, status=status.HTTP_400_BAD_REQUEST)
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
+        today = date.today()
+        days_expired = (today - payment.borrowing.expected_return_date).days
+        fine = int((payment.borrowing.book.daily_fee * days_expired) * 100) * FINE_MULTIPLIER
         try:
             session = stripe.checkout.Session.create(
                 payment_method_types=["card"],
@@ -152,7 +157,7 @@ class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
                         "price_data": {
                             "currency": "usd",
                             "product_data": {"name": str(payment.borrowing.book)},
-                            "unit_amount": int(payment.amount_of_money * 100),
+                            "unit_amount": int(fine * 100),
                         },
                         "quantity": 1,
                     }

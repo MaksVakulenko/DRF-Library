@@ -14,9 +14,8 @@ class BaseBorrowingTestCase(TestCase):
     def setUp(self):
         self.api_client = APIClient()
         self.user = User.objects.create_user(email="user@example.com", password="testpass123")
-        self.api_client.force_authenticate(user=self.user)  # ✅ Правильний спосіб
+        self.api_client.force_authenticate(user=self.user)
 
-        # Створюємо автора
         self.author = Author.objects.create(first_name="John", last_name="Doe")
 
         self.book = Book.objects.create(

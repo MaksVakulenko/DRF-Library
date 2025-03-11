@@ -46,13 +46,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         notification.send(
             sender=self.context["request"],
             to_admin_chat=True,
-            message=(
-                f"✅ New borrowing created!\n"
-                f"👤 User: {self.context['request'].user}\n"
-                f"📚 Book: {validated_data.get('book')}\n"
-                f"⏳ Waiting for payment\n"
-                f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
-            )
+            message=get_message_borrowing_created(self, validated_data)
         )
         borrowing.checkout_url = checkout_url
         return borrowing
@@ -86,8 +80,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
         today = datetime.date.today()
         if self.get_is_active(obj) and today > obj.expected_return_date:
             days_expired = (today - obj.expected_return_date).days
-            fine = (obj.book.daily_fee * days_expired) * FINE_MULTIPLIER
-            return f"${fine}"
+            return int((obj.book.daily_fee * days_expired) * FINE_MULTIPLIER)
         return None
 
     def to_representation(self, instance):

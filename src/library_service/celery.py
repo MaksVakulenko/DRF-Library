@@ -12,10 +12,10 @@ app.conf.broker_transport_options = {"broker_connection_retry_on_startup": True}
 app.conf.beat_schedule = {
     "cancel_unpaid_borrowings_every_minute": {
         'task': 'payment.tasks.auto_cancel_unpaid_borrowings',
-        'schedule': crontab(minute="*"),  # Виконується кожну хвилину
+        'schedule': crontab(minute="*"),  # Runs every minute
     },
     "check_overdue_borrowings_daily": {
         "task": "borrowing.tasks.check_overdue_borrowings",
-        "schedule": crontab(minute=0, hour=0),
+        "schedule": crontab(minute=0, hour=8),
     },
 }
