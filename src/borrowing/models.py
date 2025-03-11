@@ -60,7 +60,10 @@ class Borrowing(models.Model):
         )
         if payment.exists():
             raise ValidationError(
-                {"payment": "You have a pending payment!"}
+                {
+                    "payment": "You have a pending payment!",
+                    "pending_payment": payment.first().session_url,
+                }
             )
 
     def clean(self):

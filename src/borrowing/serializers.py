@@ -9,7 +9,6 @@ from book.serializers import BookDetailBorrowingSerializer
 from notification.signals import notification
 from payment.models import Payment
 from library_service.settings import FINE_MULTIPLIER
-from library_service.messages import get_message_borrowing_created
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
