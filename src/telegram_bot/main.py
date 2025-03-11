@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from user.models import User
 from borrowing.models import Borrowing
 from .markups import menu_keyboard
+from library_service.messages import get_borrowing_info_message
 
 
 load_dotenv()
@@ -54,12 +55,7 @@ def my_borrowings_list(call):
     for borrowing in borrowings:
         actual_return_date = borrowing.actual_return_date if borrowing.actual_return_date else "Not yet"
 
-        borrowing_message += (
-            f"🔹*{borrowing.book.title}*\n"
-            f"📅 Borrowed on: {borrowing.borrow_date.strftime('%B %d, %Y')}\n"
-            f"📅 Expected return: {borrowing.expected_return_date.strftime('%B %d, %Y')}\n"
-            f"🔙 Actual Return: {actual_return_date}\n\n"
-        )
+        borrowing_message += get_borrowing_info_message(borrowing=borrowing, actual_return_date=actual_return_date)
 
 
     bot.send_message(call.message.chat.id, borrowing_message, parse_mode="Markdown")

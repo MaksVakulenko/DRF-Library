@@ -52,3 +52,11 @@ def get_email_overdue_message(borrowing, days_expired, fine, frontend_url):
         "Best regards,\n"
         "Your Library Team 📚"
     )
+
+def get_borrowing_info_message(borrowing, actual_return_date):
+    return (
+        f"🔹*{borrowing.book.title}*\n"
+        f"📅 Borrowed on: {borrowing.borrow_date.strftime('%B %d, %Y')}\n"
+        f"📅 Expected return: {borrowing.expected_return_date.strftime('%B %d, %Y')}\n"
+        f"🔙 Actual Return: {actual_return_date}\n\n"
+    )
