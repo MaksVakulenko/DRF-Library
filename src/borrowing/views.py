@@ -17,6 +17,7 @@ from borrowing.serializers import (
 from notification.signals import notification
 from payment.models import Payment
 import library_service.examples_swagger as swagger
+from library_service.messages import get_message_book_returned
 
 
 class BorrowingViewSet(
@@ -109,10 +110,7 @@ class BorrowingViewSet(
         notification.send(
             sender=self.__class__,
             to_admin_chat=True,
-            message=f"✅ Book successfully returned!\n"
-                    f"👤 User: {borrowing.user}\n"
-                    f"📚 Book: {borrowing.book}\n"
-                    f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            message=get_message_book_returned(borrowing)
         )
 
         return Response(serializer.data, status=status.HTTP_200_OK)

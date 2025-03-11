@@ -9,3 +9,12 @@ def get_message_borrowing_created(borrowing, validated_data):
         f"⏳ Waiting for payment\n"
         f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
     )
+
+
+def get_message_book_returned(borrowing):
+    return (
+        f"✅ Book successfully returned!\n"
+        f"👤 User: {borrowing.user}\n"
+        f"📚 Book: {borrowing.book}\n"
+        f"📅 Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    )
