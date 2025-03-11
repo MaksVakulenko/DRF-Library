@@ -16,6 +16,6 @@ app.conf.beat_schedule = {
     },
     "check_overdue_borrowings_daily": {
         "task": "borrowing.tasks.check_overdue_borrowings",
-        "schedule": crontab(minute=0, hour=0),
+        "schedule": crontab(minute=0, hour=8),
     },
 }
