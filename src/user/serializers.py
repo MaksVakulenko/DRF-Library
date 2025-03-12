@@ -19,27 +19,27 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
-    @transaction.atomic
     def create(self, validated_data):
-        user = get_user_model().objects.create_user(**validated_data)
-        send_verification_email(user)
-        return user
-
-    @transaction.atomic
-    def update(self, instance, validated_data, partial=True):
-        password = validated_data.pop("password", None)
-        email = validated_data.pop("email", None)
-
-        user = super().update(instance, validated_data)
-
-        if password:
-            user.set_password(password)
-            user.save()
-
-        if email:
-            user.email = email
-            user.is_active = False
-            user.save()
+        with transaction.atomic():
+            user = get_user_model().objects.create_user(**validated_data)
             send_verification_email(user)
+            return user
 
-        return user
+    def update(self, instance, validated_data, partial=True):
+        with transaction.atomic():
+            password = validated_data.pop("password", None)
+            email = validated_data.pop("email", None)
+
+            user = super().update(instance, validated_data)
+
+            if password:
+                user.set_password(password)
+                user.save()
+
+            if email:
+                user.email = email
+                user.is_active = False
+                user.save()
+                send_verification_email(user)
+
+            return user
