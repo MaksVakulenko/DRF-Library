@@ -118,21 +118,21 @@ class BorrowingViewSet(
     @extend_schema(
         examples=swagger.borrowing_post_example
     )
-    @transaction.atomic
     def create(self, request, *args, **kwargs):
         """
         Creates a borrowing and returns a `payment_url`.
         """
         # Validate request payload
-        serializer = BorrowingSerializer(
-            data=request.data, context={"request": request}
-        )
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        borrowing = serializer.instance
-        return Response(
-            {"redirect_url": borrowing.checkout_url}, status=status.HTTP_201_CREATED
-        )
+        with transaction.atomic():
+            serializer = BorrowingSerializer(
+                data=request.data, context={"request": request}
+            )
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            borrowing = serializer.instance
+            return Response(
+                {"redirect_url": borrowing.checkout_url}, status=status.HTTP_201_CREATED
+            )
 
     @extend_schema(
         parameters=swagger.borrowing_filter_parameters

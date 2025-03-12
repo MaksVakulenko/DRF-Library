@@ -31,25 +31,24 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
         return data
 
-    @transaction.atomic
     def create(self, validated_data):
-        borrowing = super().create(validated_data)
-        # Резервуємо книгу
-        borrowing.book.inventory -= 1
-        borrowing.book.save()
-        checkout_url = Payment.create_stripe_checkout(
-            request=self.context["request"],
-            payment_type=Payment.Type.PAYMENT,
-            borrowing=borrowing,
-            total_amount=borrowing.total_price(),
-        )
-        notification.send(
-            sender=self.context["request"],
-            to_admin_chat=True,
-            message=get_message_borrowing_created(self, validated_data)
-        )
-        borrowing.checkout_url = checkout_url
-        return borrowing
+        with transaction.atomic():
+            borrowing = super().create(validated_data)
+            borrowing.book.inventory -= 1
+            borrowing.book.save()
+            checkout_url = Payment.create_stripe_checkout(
+                request=self.context["request"],
+                payment_type=Payment.Type.PAYMENT,
+                borrowing=borrowing,
+                total_amount=borrowing.total_price(),
+            )
+            notification.send(
+                sender=self.context["request"],
+                to_admin_chat=True,
+                message=get_message_borrowing_created(self, validated_data)
+            )
+            borrowing.checkout_url = checkout_url
+            return borrowing
 
 
 class BorrowingListSerializer(serializers.ModelSerializer):

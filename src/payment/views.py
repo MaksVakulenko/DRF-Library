@@ -26,72 +26,72 @@ class StripeSuccessAPI(APIView):
     permission_classes = (AllowAny,)
     serializer_class = EmptySerializer
 
-    @transaction.atomic
     def get(self, request):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+        with transaction.atomic():
+            stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        session_id = request.GET.get("session_id")
-        if not session_id:
-            return Response(
-                {"error": "Session ID is required"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        try:
-            session = stripe.checkout.Session.retrieve(session_id)
-            if session.payment_status == "paid":
-                # Retrieve payment record by session_id
-                payment = Payment.objects.filter(session_id=session_id).first()
-                if not payment:
-                    return Response(
-                        {"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
-                    )
-
-                payment.mark_as_paid()  # Updates payment and ticket statuses
-
-                notification.send(
-                    sender=self.__class__,
-                    to_admin_chat=True,
-                    message=get_message_payment_successful(payment)
+            session_id = request.GET.get("session_id")
+            if not session_id:
+                return Response(
+                    {"error": "Session ID is required"}, status=status.HTTP_400_BAD_REQUEST
                 )
 
-                if payment.type == Payment.Type.PAYMENT:
-                    return Response(
-                        {
-                            "message": "Payment successful",
-                            "borrowing_id": payment.borrowing.id,
-                        }
-                    )
-                else:
-                    today = date.today()
-                    serializer = BorrowingReturnSerializer(
-                        payment.borrowing,
-                        data={"actual_return_date": today},
-                        partial=True,
-                    )
-                    serializer.is_valid(raise_exception=True)
-                    serializer.save()
-                    payment.borrowing.book.inventory += 1
-                    payment.borrowing.book.save()
+            try:
+                session = stripe.checkout.Session.retrieve(session_id)
+                if session.payment_status == "paid":
+                    # Retrieve payment record by session_id
+                    payment = Payment.objects.filter(session_id=session_id).first()
+                    if not payment:
+                        return Response(
+                            {"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND
+                        )
+
+                    payment.mark_as_paid()  # Updates payment and ticket statuses
+
                     notification.send(
                         sender=self.__class__,
                         to_admin_chat=True,
-                        message=get_message_book_returned(payment.borrowing)
-                    )
-                    return Response(
-                        {
-                            "message": f"Fine payment for borrowing {payment.borrowing.id} successful",
-                            "borrowing_id": payment.borrowing.id,
-                        }
+                        message=get_message_payment_successful(payment)
                     )
 
-            return Response(
-                {"error": "Payment not completed"}, status=status.HTTP_400_BAD_REQUEST
-            )
+                    if payment.type == Payment.Type.PAYMENT:
+                        return Response(
+                            {
+                                "message": "Payment successful",
+                                "borrowing_id": payment.borrowing.id,
+                            }
+                        )
+                    else:
+                        today = date.today()
+                        serializer = BorrowingReturnSerializer(
+                            payment.borrowing,
+                            data={"actual_return_date": today},
+                            partial=True,
+                        )
+                        serializer.is_valid(raise_exception=True)
+                        serializer.save()
+                        payment.borrowing.book.inventory += 1
+                        payment.borrowing.book.save()
+                        notification.send(
+                            sender=self.__class__,
+                            to_admin_chat=True,
+                            message=get_message_book_returned(payment.borrowing)
+                        )
+                        return Response(
+                            {
+                                "message": f"Fine payment for borrowing {payment.borrowing.id} successful",
+                                "borrowing_id": payment.borrowing.id,
+                            }
+                        )
 
-        except stripe.error.StripeError as e:
-            return Response(
-                {"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST
-            )
+                return Response(
+                    {"error": "Payment not completed"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            except stripe.error.StripeError as e:
+                return Response(
+                    {"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
 
 class StripeCancelAPI(APIView):
@@ -130,51 +130,51 @@ class PaymentViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.
         return self.queryset.filter(borrowing__user=self.request.user)
 
     @action(detail=True, methods=["POST"], url_path="renew")
-    @transaction.atomic
     def renew_payment(self, request, pk=None):
-        try:
-            payment = Payment.objects.get(pk=pk)
-        except Payment.DoesNotExist:
-            return Response({"error": "Payment not found."}, status=status.HTTP_404_NOT_FOUND)
+        with transaction.atomic():
+            try:
+                payment = Payment.objects.get(pk=pk)
+            except Payment.DoesNotExist:
+                return Response({"error": "Payment not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        if payment.status == Payment.Status.PENDING:
-            return Response({"redirect_url": payment.session_url}, status=status.HTTP_200_OK)
-        elif payment.status == Payment.Status.PAID:
-            return Response({"error": "This payments is already paid"}, status=status.HTTP_400_BAD_REQUEST)
+            if payment.status == Payment.Status.PENDING:
+                return Response({"redirect_url": payment.session_url}, status=status.HTTP_200_OK)
+            elif payment.status == Payment.Status.PAID:
+                return Response({"error": "This payments is already paid"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if payment.type != Payment.Type.FINE:
-            return Response({"error": "Cannot create new payment, borrowing does not exist anymore as payment expired. Please create new borrowing!"}, status=status.HTTP_400_BAD_REQUEST)
-        stripe.api_key = settings.STRIPE_SECRET_KEY
+            if payment.type != Payment.Type.FINE:
+                return Response({"error": "Cannot create new payment, borrowing does not exist anymore as payment expired. Please create new borrowing!"}, status=status.HTTP_400_BAD_REQUEST)
+            stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        today = date.today()
-        days_expired = (today - payment.borrowing.expected_return_date).days
-        fine = int((payment.borrowing.book.daily_fee * days_expired) * 100) * FINE_MULTIPLIER
-        try:
-            session = stripe.checkout.Session.create(
-                payment_method_types=["card"],
-                line_items=[
-                    {
-                        "price_data": {
-                            "currency": "usd",
-                            "product_data": {"name": str(payment.borrowing.book)},
-                            "unit_amount": int(fine * 100),
-                        },
-                        "quantity": 1,
-                    }
-                ],
-                mode="payment",
-                success_url=(request.build_absolute_uri(reverse("payment:stripe-success"))
-                        + "?session_id={CHECKOUT_SESSION_ID}"),
-                cancel_url = request.build_absolute_uri(reverse("payment:stripe-cancel"))
-            )
+            today = date.today()
+            days_expired = (today - payment.borrowing.expected_return_date).days
+            fine = int((payment.borrowing.book.daily_fee * days_expired) * 100) * FINE_MULTIPLIER
+            try:
+                session = stripe.checkout.Session.create(
+                    payment_method_types=["card"],
+                    line_items=[
+                        {
+                            "price_data": {
+                                "currency": "usd",
+                                "product_data": {"name": str(payment.borrowing.book)},
+                                "unit_amount": int(fine * 100),
+                            },
+                            "quantity": 1,
+                        }
+                    ],
+                    mode="payment",
+                    success_url=(request.build_absolute_uri(reverse("payment:stripe-success"))
+                            + "?session_id={CHECKOUT_SESSION_ID}"),
+                    cancel_url = request.build_absolute_uri(reverse("payment:stripe-cancel"))
+                )
 
-            payment.session_id = session.id
-            payment.session_url = session.url
-            payment.status = Payment.Status.PENDING
-            payment.save()
-            return Response({"redirect_url": session.url}, status=status.HTTP_201_CREATED)
-        except stripe.error.StripeError as e:
-            return Response({"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+                payment.session_id = session.id
+                payment.session_url = session.url
+                payment.status = Payment.Status.PENDING
+                payment.save()
+                return Response({"redirect_url": session.url}, status=status.HTTP_201_CREATED)
+            except stripe.error.StripeError as e:
+                return Response({"error": f"Stripe error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(summary="Retrieve payment details")
     def retrieve(self, request, *args, **kwargs):
